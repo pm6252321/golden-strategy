@@ -739,7 +739,7 @@
                 <!-- الستوب لوس -->
                 <div class="info-box" style="margin-top: 20px;">
                     <strong>🛡️ الستوب لوس (Stop Loss):</strong><br>
-                    يتم تفعيله تلقائياً عند 0% (سعر الدخول المعاكس)
+                    يتم تفعيله تلقائياً عند 0.0001% (سعر الدخول المعاكس)
                 </div>
 
                 <div class="buttons">
@@ -783,7 +783,7 @@
                         document.getElementById('currentPrice').textContent = '$' + price.toFixed(4);
                         document.getElementById('currentPriceDisplay').style.display = 'block';
                         
-                        // مراقبة الأسرار إذا كانت الاستراتيجية مفعلة
+                        // مراقبة الأسعار إذا كانت الاستراتيجية مفعلة
                         if (isStrategyActive) {
                             monitorPrice();
                         }
@@ -812,13 +812,12 @@
             };
         }
         
-        // === الكود الأصلي يبقى كما هو مع تعديلات بسيطة ===
+        // === المتغيرات الأساسية ===
         const BOT_TOKEN = '8575662863:AAFvaDlDKRNX9c6kSB6iHST30TIZf1nqzMo';
         const CHAT_ID = '5155984592';
         
         let currentSymbol = 'BTCUSDT';
         let candleData = null;
-        let priceUpdateInterval = null;
         let selectedMode = 'isolated';
         let selectedLongTarget = 1;
         let selectedShortTarget = 1;
@@ -828,12 +827,21 @@
         let walletBalance = 1000.00;
         let todayProfitPercent = 0;
         let todayLossPercent = 0;
+        
+        // === متغيرات جديدة لمنع التكرار ===
         let isStrategyActive = false;
         let tradeStatus = null;
         let enteredPrice = 0;
         let isLongPosition = false;
         let hitTargets = {};
         let stopHit = false;
+        let notificationSent = {
+            strategyActivated: false,
+            entryLong: false,
+            entryShort: false,
+            stopLoss: false
+        };
+        let tradeStartTime = null;
 
         // دالة إرسال رسالة إلى البوت
         async function sendTelegramMessage(message) {
@@ -880,42 +888,69 @@
             document.getElementById('lossPercent').textContent = todayLossPercent + '%';
         }
 
+        // حساب مدة الصفقة
+        function getTradeDuration() {
+            if (!tradeStartTime) return '0 دقيقة';
+            
+            const now = new Date();
+            const durationMs = now - tradeStartTime;
+            const durationMinutes = Math.floor(durationMs / (1000 * 60));
+            
+            return durationMinutes + ' دقيقة';
+        }
+
+        // إعادة تعيين الإشعارات
+        function resetNotifications() {
+            notificationSent = {
+                strategyActivated: false,
+                entryLong: false,
+                entryShort: false,
+                stopLoss: false
+            };
+            
+            hitTargets = {};
+            stopHit = false;
+            tradeStartTime = null;
+        }
+
         // دالة مراقبة الأسعار وإرسال التنبيهات
         async function monitorPrice() {
             if (!isStrategyActive || !candleData) return;
             
             try {
                 const currentPrice = parseFloat(document.getElementById('currentPrice').textContent.replace('$', '').replace(',', ''));
-                let message = '';
                 
                 // مراقبة دخول اللونج
                 if (currentPrice > candleData.high && tradeStatus !== 'long_entry') {
                     tradeStatus = 'long_entry';
                     enteredPrice = candleData.high;
                     isLongPosition = true;
-                    hitTargets = {};
-                    stopHit = false;
+                    tradeStartTime = new Date();
                     
-                    message = `
-🚨 <b>دخول صفقة لونج!</b>
-
+                    if (!notificationSent.entryLong) {
+                        notificationSent.entryLong = true;
+                        
+                        const message = `
+🚨 <b>دخول صفقة لونج</b>
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
-💰 السعر الحالي: $${currentPrice.toFixed(4)}
-📈 سعر الدخول: $${candleData.high.toFixed(4)}
+💰 سعر الدخول: $${candleData.high.toFixed(4)}
+📈 السعر الحالي: $${currentPrice.toFixed(4)}
 ⚡ الرافعة: ${leverage}x
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🎯 <b>الأهداف:</b>
-🎯 هدف 1%: $${(candleData.high * 1.01).toFixed(4)}
-🎯 هدف 2%: $${(candleData.high * 1.02).toFixed(4)}
-🎯 هدف 3%: $${(candleData.high * 1.03).toFixed(4)}
-🎯 هدف 4%: $${(candleData.high * 1.04).toFixed(4)}
-🎯 هدف 5%: $${(candleData.high * 1.05).toFixed(4)}
-
-🛡️ الستوب: $${candleData.low.toFixed(4)} (0%)
-
+1️⃣ +1% → $${(candleData.high * 1.01).toFixed(4)}
+2️⃣ +2% → $${(candleData.high * 1.02).toFixed(4)}
+3️⃣ +3% → $${(candleData.high * 1.03).toFixed(4)}
+4️⃣ +4% → $${(candleData.high * 1.04).toFixed(4)}
+5️⃣ +5% → $${(candleData.high * 1.05).toFixed(4)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🛡️ الستوب لوس: $${(candleData.high * 0.999999).toFixed(4)} (-0.0001%)
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
-                    `;
-                    sendTelegramMessage(message);
+                        `;
+                        sendTelegramMessage(message);
+                    }
                 }
                 
                 // مراقبة دخول الشورت
@@ -923,29 +958,32 @@
                     tradeStatus = 'short_entry';
                     enteredPrice = candleData.low;
                     isLongPosition = false;
-                    hitTargets = {};
-                    stopHit = false;
+                    tradeStartTime = new Date();
                     
-                    message = `
-🚨 <b>دخول صفقة شورت!</b>
-
+                    if (!notificationSent.entryShort) {
+                        notificationSent.entryShort = true;
+                        
+                        const message = `
+🚨 <b>دخول صفقة شورت</b>
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
-💰 السعر الحالي: $${currentPrice.toFixed(4)}
-📉 سعر الدخول: $${candleData.low.toFixed(4)}
+💰 سعر الدخول: $${candleData.low.toFixed(4)}
+📉 السعر الحالي: $${currentPrice.toFixed(4)}
 ⚡ الرافعة: ${leverage}x
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🎯 <b>الأهداف:</b>
-🎯 هدف 1%: $${(candleData.low * 0.99).toFixed(4)}
-🎯 هدف 2%: $${(candleData.low * 0.98).toFixed(4)}
-🎯 هدف 3%: $${(candleData.low * 0.97).toFixed(4)}
-🎯 هدف 4%: $${(candleData.low * 0.96).toFixed(4)}
-🎯 هدف 5%: $${(candleData.low * 0.95).toFixed(4)}
-
-🛡️ الستوب: $${candleData.high.toFixed(4)} (0%)
-
+1️⃣ -1% → $${(candleData.low * 0.99).toFixed(4)}
+2️⃣ -2% → $${(candleData.low * 0.98).toFixed(4)}
+3️⃣ -3% → $${(candleData.low * 0.97).toFixed(4)}
+4️⃣ -4% → $${(candleData.low * 0.96).toFixed(4)}
+5️⃣ -5% → $${(candleData.low * 0.95).toFixed(4)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🛡️ الستوب لوس: $${(candleData.low * 1.000001).toFixed(4)} (+0.0001%)
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
-                    `;
-                    sendTelegramMessage(message);
+                        `;
+                        sendTelegramMessage(message);
+                    }
                 }
                 
                 // مراقبة ضرب أهداف اللونج
@@ -963,26 +1001,22 @@
                             const tradeAmount = updateCalculatedAmount();
                             const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
                             
-                            message = `
-✅ <b>تم تحقيق الهدف ${targetPercent}%! (لونج)</b>
-
-📊 العملة: ${currentSymbol}
+                            const message = `
+✅ <b>تحقيق الهدف ${targetPercent}%</b>
+📊 العملة: ${currentSymbol} | 📈 لونج
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
-⚡ الرافعة: ${leverage}x
-
+⏰ المدة: ${getTradeDuration()}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الربح:</b>
-📈 بدون رافعة: ${profitWithoutLeverage}%
-⚡ مع الرافعة: ${profitWithLeverage}%
-
-🎯 الهدف المحقق: ${targetPercent}%
-
-💰 <b>التفاصيل المالية:</b>
-💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
-💵 الربح بالرافعة: $${profitAmount}
-
-🎉 مبروك! الصفقة ناجحة
-
+• بدون رافعة: +${profitWithoutLeverage}%
+• مع الرافعة ${leverage}x: +${profitWithLeverage}%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+💵 المبلغ: $${tradeAmount.toFixed(2)}
+💰 الربح: $${profitAmount}
+🏦 الرصيد الجديد: $${(walletBalance + parseFloat(profitAmount)).toFixed(2)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
                             `;
                             sendTelegramMessage(message);
@@ -1009,26 +1043,22 @@
                             const tradeAmount = updateCalculatedAmount();
                             const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
                             
-                            message = `
-✅ <b>تم تحقيق الهدف ${targetPercent}%! (شورت)</b>
-
-📊 العملة: ${currentSymbol}
+                            const message = `
+✅ <b>تحقيق الهدف ${targetPercent}%</b>
+📊 العملة: ${currentSymbol} | 📉 شورت
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
-⚡ الرافعة: ${leverage}x
-
+⏰ المدة: ${getTradeDuration()}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الربح:</b>
-📈 بدون رافعة: ${profitWithoutLeverage}%
-⚡ مع الرافعة: ${profitWithLeverage}%
-
-🎯 الهدف المحقق: ${targetPercent}%
-
-💰 <b>التفاصيل المالية:</b>
-💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
-💵 الربح بالرافعة: $${profitAmount}
-
-🎉 مبروك! الصفقة ناجحة
-
+• بدون رافعة: +${profitWithoutLeverage}%
+• مع الرافعة ${leverage}x: +${profitWithLeverage}%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+💵 المبلغ: $${tradeAmount.toFixed(2)}
+💰 الربح: $${profitAmount}
+🏦 الرصيد الجديد: $${(walletBalance + parseFloat(profitAmount)).toFixed(2)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
                             `;
                             sendTelegramMessage(message);
@@ -1040,79 +1070,89 @@
                     }
                 }
                 
-                // مراقبة ضرب الستوب للونج
+                // مراقبة ضرب الستوب للونج (0.0001%)
                 if (tradeStatus === 'long_entry' && !stopHit) {
-                    if (currentPrice <= candleData.low) {
+                    const stopPrice = candleData.high * 0.999999; // -0.0001%
+                    
+                    if (currentPrice <= stopPrice) {
                         stopHit = true;
                         tradeStatus = 'hit_stop';
                         
-                        const lossWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(2);
-                        const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(2);
-                        const tradeAmount = updateCalculatedAmount();
-                        const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
-                        
-                        message = `
-❌ <b>تم ضرب الستوب! (لونج)</b>
-
-📊 العملة: ${currentSymbol}
+                        if (!notificationSent.stopLoss) {
+                            notificationSent.stopLoss = true;
+                            
+                            const lossWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(4);
+                            const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(4);
+                            const tradeAmount = updateCalculatedAmount();
+                            const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
+                            
+                            const message = `
+❌ <b>ضرب الستوب لوس</b>
+📊 العملة: ${currentSymbol} | 📈 لونج
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
-⚡ الرافعة: ${leverage}x
-
+⏰ المدة: ${getTradeDuration()}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
-📉 بدون رافعة: ${lossWithoutLeverage}%
-⚡ مع الرافعة: ${lossWithLeverage}%
-
-💰 <b>التفاصيل المالية:</b>
-💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
-💵 الخسارة بالرافعة: $${lossAmount}
-
-⚠️ تم إغلاق الصفقة بخسارة
-
+• بدون رافعة: ${lossWithoutLeverage}%
+• مع الرافعة ${leverage}x: ${lossWithLeverage}%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+💵 المبلغ: $${tradeAmount.toFixed(2)}
+📉 الخسارة: $${lossAmount}
+🏦 الرصيد الجديد: $${(walletBalance - parseFloat(lossAmount)).toFixed(2)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+⚠️ تم إغلاق الصفقة
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
-                        `;
-                        sendTelegramMessage(message);
-                        
-                        walletBalance -= parseFloat(lossAmount);
-                        updateCalculatedAmount();
+                            `;
+                            sendTelegramMessage(message);
+                            
+                            walletBalance -= parseFloat(lossAmount);
+                            updateCalculatedAmount();
+                        }
                     }
                 }
                 
-                // مراقبة ضرب الستوب للشورت
+                // مراقبة ضرب الستوب للشورت (0.0001%)
                 if (tradeStatus === 'short_entry' && !stopHit) {
-                    if (currentPrice >= candleData.high) {
+                    const stopPrice = candleData.low * 1.000001; // +0.0001%
+                    
+                    if (currentPrice >= stopPrice) {
                         stopHit = true;
                         tradeStatus = 'hit_stop';
                         
-                        const lossWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(2);
-                        const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(2);
-                        const tradeAmount = updateCalculatedAmount();
-                        const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
-                        
-                        message = `
-❌ <b>تم ضرب الستوب! (شورت)</b>
-
-📊 العملة: ${currentSymbol}
+                        if (!notificationSent.stopLoss) {
+                            notificationSent.stopLoss = true;
+                            
+                            const lossWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(4);
+                            const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(4);
+                            const tradeAmount = updateCalculatedAmount();
+                            const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
+                            
+                            const message = `
+❌ <b>ضرب الستوب لوس</b>
+📊 العملة: ${currentSymbol} | 📉 شورت
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
-⚡ الرافعة: ${leverage}x
-
+⏰ المدة: ${getTradeDuration()}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
-📉 بدون رافعة: ${lossWithoutLeverage}%
-⚡ مع الرافعة: ${lossWithLeverage}%
-
-💰 <b>التفاصيل المالية:</b>
-💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
-💵 الخسارة بالرافعة: $${lossAmount}
-
-⚠️ تم إغلاق الصفقة بخسارة
-
+• بدون رافعة: ${lossWithoutLeverage}%
+• مع الرافعة ${leverage}x: ${lossWithLeverage}%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+💵 المبلغ: $${tradeAmount.toFixed(2)}
+📉 الخسارة: $${lossAmount}
+🏦 الرصيد الجديد: $${(walletBalance - parseFloat(lossAmount)).toFixed(2)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+⚠️ تم إغلاق الصفقة
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
-                        `;
-                        sendTelegramMessage(message);
-                        
-                        walletBalance -= parseFloat(lossAmount);
-                        updateCalculatedAmount();
+                            `;
+                            sendTelegramMessage(message);
+                            
+                            walletBalance -= parseFloat(lossAmount);
+                            updateCalculatedAmount();
+                        }
                     }
                 }
             } catch (error) {
@@ -1152,35 +1192,35 @@
             
             const message = `
 📊 <b>تقرير نهاية اليوم</b>
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📅 التاريخ: ${dateStr}
 🕒 وقت التقرير: ${today.toLocaleTimeString('ar-SA')}
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📈 <b>إحصائيات اليوم:</b>
 📊 نسبة الربح اليومية: ${todayProfitPercent}%
 📉 نسبة الخسارة اليومية: ${todayLossPercent}%
 💰 صافي الربح/الخسارة: ${profitLossToday > 0 ? '+' : ''}${profitLossToday.toFixed(2)}%
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 <b>حالة المحفظة:</b>
 🏦 رصيد البداية: $1000.00
 💰 الرصيد الحالي: $${walletBalance.toFixed(2)}
 📊 التغير اليومي: $${dailyChange.toFixed(2)} (${profitLossToday > 0 ? '+' : ''}${profitLossToday.toFixed(2)}%)
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🔔 <b>ملخص نشاط اليوم:</b>
 ${tradeSummary}
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ${profitLossToday > 0 ? '🎉 يوم رابح! استمر في التقدم!' : 
   profitLossToday < 0 ? '⚠️ يوم بخسارة صغيرة، لا تقلق وغداً أفضل!' : 
   '📊 يوم متعادل، الفرص تأتي غداً!'}
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🔜 نراك غداً بإذن الله!
             `;
             
             sendTelegramMessage(message);
             
+            // إعادة تعيين الحالة
             tradeStatus = null;
-            hitTargets = {};
-            stopHit = false;
+            resetNotifications();
             
             updateDateAndStats();
         }
@@ -1383,21 +1423,6 @@ ${profitLossToday > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             updateCalculatedAmount();
         }
 
-        async function updateCurrentPrice() {
-            try {
-                const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${currentSymbol}`);
-                const data = await response.json();
-                
-                if (data.price) {
-                    const price = parseFloat(data.price);
-                    document.getElementById('currentPrice').textContent = '$' + price.toFixed(4);
-                    document.getElementById('currentPriceDisplay').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error updating price:', error);
-            }
-        }
-
         async function activateStrategy() {
             if (!candleData) {
                 alert('⚠️ الرجاء تحميل بيانات العملة أولاً');
@@ -1409,107 +1434,73 @@ ${profitLossToday > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             const marginAmount = (tradeAmount * (marginPercent / 100)).toFixed(2);
             const leveragedAmount = (tradeAmount * leverage).toFixed(2);
 
-            const botMessage = `
-🤖 <b>تم تفعيل الاستراتيجية الذهبية!</b>
-
+            if (!notificationSent.strategyActivated) {
+                const botMessage = `
+🎯 <b>تفعيل الاستراتيجية الذهبية</b>
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
 💰 السعر الحالي: $${parseFloat(document.getElementById('currentPrice').textContent.replace('$', '')).toFixed(4)}
-📈 High (دخول لونج): $${candleData.high.toFixed(4)}
-📉 Low (دخول شورت): $${candleData.low.toFixed(4)}
-
-⚙️ <b>الإعدادات:</b>
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+📈 نقطة دخول اللونج: $${candleData.high.toFixed(4)}
+📉 نقطة دخول الشورت: $${candleData.low.toFixed(4)}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+⚡ <b>الإعدادات:</b>
 📊 الوضع: ${modeText}
 💰 الرافعة: ${leverage}x
 📊 نسبة الحجز: ${marginPercent}%
 📈 الكمية: ${quantityPercent}% من المحفظة
-
-🎯 <b>الأهداف (لكل هدف إشعار منفصل):</b>
-📈 هدف اللونج 1%: $${(candleData.high * 1.01).toFixed(4)}
-📈 هدف اللونج 2%: $${(candleData.high * 1.02).toFixed(4)}
-📈 هدف اللونج 3%: $${(candleData.high * 1.03).toFixed(4)}
-📈 هدف اللونج 4%: $${(candleData.high * 1.04).toFixed(4)}
-📈 هدف اللونج 5%: $${(candleData.high * 1.05).toFixed(4)}
-
-📉 هدف الشورت 1%: $${(candleData.low * 0.99).toFixed(4)}
-📉 هدف الشورت 2%: $${(candleData.low * 0.98).toFixed(4)}
-📉 هدف الشورت 3%: $${(candleData.low * 0.97).toFixed(4)}
-📉 هدف الشورت 4%: $${(candleData.low * 0.96).toFixed(4)}
-📉 هدف الشورت 5%: $${(candleData.low * 0.95).toFixed(4)}
-
-🛡️ <b>الستوب لوس:</b>
-📈 ستوب اللونج: $${candleData.low.toFixed(4)} (0%)
-📉 ستوب الشورت: $${candleData.high.toFixed(4)} (0%)
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 <b>المعلومات المالية:</b>
 💵 المبلغ: $${tradeAmount.toFixed(2)}
 🛡️ الحجز: $${marginAmount}
 ⚡ بالرافعة: $${leveragedAmount}
-
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🎯 <b>الأهداف:</b>
+📈 اللونج: +1% إلى +5%
+📉 الشورت: -1% إلى -5%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🛡️ <b>الستوب لوس:</b>
+📈 اللونج: -0.0001%
+📉 الشورت: +0.0001%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ⏰ وقت التفعيل: ${new Date().toLocaleTimeString('ar-SA')}
 📅 التاريخ: ${new Date().toLocaleDateString('ar-SA')}
-
-🔔 <b>سيرسل البوت تنبيهات تلقائية عند:</b>
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🔔 <b>سيرسل البوت تنبيهات عند:</b>
 🚨 دخول صفقة لونج/شورت
-✅ تحقيق كل هدف (1%-5%) مع الربح بالرافعة
-❌ ضرب الستوب 0%
-📊 تقرير نهاية اليوم مع حصيلة الربح/الخسارة
-            `;
-
-            const botSent = await sendTelegramMessage(botMessage);
-            
-            if (botSent) {
-                isStrategyActive = true;
-                tradeStatus = null;
-                hitTargets = {};
-                stopHit = false;
-                
-                const message = `
-🎯 تم تفعيل الاستراتيجية الذهبية!
-
-📅 إحصائيات اليوم:
-   📈 نسبة الربح: ${todayProfitPercent}%
-   📉 نسبة الخسارة: ${todayLossPercent}%
-
-📊 العملة: ${currentSymbol}
-📊 الوضع: ${modeText}
-💰 الرافعة المالية: ${leverage}x
-📊 نسبة الحجز: ${marginPercent}%
-📈 الكمية: ${quantityPercent}% من المحفظة
-
-💰 **المحفظة:**
-   🏦 الرصيد: $${walletBalance.toFixed(2)}
-   💰 مبلغ التداول: $${tradeAmount.toFixed(2)}
-   🛡️ مبلغ الحجز: $${marginAmount}
-   ⚡ المبلغ برافعة: $${leveragedAmount}
-
-📈 **إعدادات اللونج (Long):**
-   🎯 نقطة الدخول: $${candleData.high.toFixed(4)}
-   🎯 الهدف 1%: $${(candleData.high * 1.01).toFixed(4)}
-   🎯 الهدف 2%: $${(candleData.high * 1.02).toFixed(4)}
-   🎯 الهدف 3%: $${(candleData.high * 1.03).toFixed(4)}
-   🎯 الهدف 4%: $${(candleData.high * 1.04).toFixed(4)}
-   🎯 الهدف 5%: $${(candleData.high * 1.05).toFixed(4)}
-   🛡️ الستوب لوس: $${candleData.low.toFixed(4)} (0%)
-
-📉 **إعدادات الشورت (Short):**
-   🎯 نقطة الدخول: $${candleData.low.toFixed(4)}
-   🎯 الهدف 1%: $${(candleData.low * 0.99).toFixed(4)}
-   🎯 الهدف 2%: $${(candleData.low * 0.98).toFixed(4)}
-   🎯 الهدف 3%: $${(candleData.low * 0.97).toFixed(4)}
-   🎯 الهدف 4%: $${(candleData.low * 0.96).toFixed(4)}
-   🎯 الهدف 5%: $${(candleData.low * 0.95).toFixed(4)}
-   🛡️ الستوب لوس: $${candleData.high.toFixed(4)} (0%)
-
-⚠️ **ملاحظة:** شمعة 00:00 تستخدم لتحديد Low و High فقط
-
-🤖 **تم إرسال تفاصيل الاستراتيجية إلى البوت التليجرام!**
-✅ **الاستراتيجية جاهزة للتنفيذ!**
-✅ **سيتم إرسال إشعار لكل هدف يتحقق!**
+✅ تحقيق كل هدف (1%-5%)
+❌ ضرب الستوب 0.0001%
+📊 تقرير نهاية اليوم
                 `;
 
-                alert(message);
-            } else {
-                alert('⚠️ حدث خطأ في إرسال الرسالة للبوت. تأكد من اتصال الإنترنت.');
+                const botSent = await sendTelegramMessage(botMessage);
+                
+                if (botSent) {
+                    notificationSent.strategyActivated = true;
+                    isStrategyActive = true;
+                    resetNotifications();
+                    
+                    const message = `
+🎯 تم تفعيل الاستراتيجية الذهبية!
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+📊 العملة: ${currentSymbol}
+📊 الوضع: ${modeText}
+💰 الرافعة: ${leverage}x
+📊 نسبة الحجز: ${marginPercent}%
+📈 الكمية: ${quantityPercent}%
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+💰 المبلغ: $${tradeAmount.toFixed(2)}
+🛡️ الحجز: $${marginAmount}
+⚡ بالرافعة: $${leveragedAmount}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🤖 تم إرسال تفاصيل الاستراتيجية إلى البوت
+✅ الاستراتيجية جاهزة للتنفيذ
+                    `;
+                    
+                    alert(message);
+                } else {
+                    alert('⚠️ حدث خطأ في إرسال الرسالة للبوت. تأكد من اتصال الإنترنت.');
+                }
             }
         }
 
@@ -1534,8 +1525,7 @@ ${profitLossToday > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                 
                 isStrategyActive = false;
                 tradeStatus = null;
-                hitTargets = {};
-                stopHit = false;
+                resetNotifications();
                 
                 alert('✅ تم إلغاء الاستراتيجية بنجاح');
             }
