@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاستراتيجية الذهبية - Golden Strategy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: #ffd700;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 3px solid #ffd700;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            text-shadow: 0 0 20px #ffd700, 0 0 30px #ffa500;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #d4af37;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(26, 26, 46, 0.9);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #ffd700;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            color: #ffd700;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2a2a3e 100%);
+            border: 3px solid #ffd700;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .price-label {
+            font-size: 1.2em;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .price-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 15px #ffa500;
+            font-family: 'Courier New', monospace;
+        }
+
+        .entry-prices {
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #ffd700;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .entry-header {
+            text-align: center;
+            font-size: 1.3em;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); }
+        }
+
+        .entry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .entry-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .entry-type {
+            font-size: 1em;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .entry-price {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffa500;
+            font-family: 'Courier New', monospace;
+        }
+
+        .slider-container {
+            margin: 25px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(to right, #d4af37, #ffd700);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #ffd700;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #ffd700;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .targets-container {
+            margin: 25px 0;
+        }
+
+        .target-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .target-row:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .target-row.selected {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .target-label {
+            font-size: 1.1em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .target-percent {
+            font-size: 1.2em;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .target-price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-activate {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-activate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #8b0000 0%, #b22222 100%);
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(139, 0, 0, 0.4);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(139, 0, 0, 0.6);
+        }
+
+        .loading {
+            text-align: center;
+            color: #ffd700;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .error {
+            background: rgba(139, 0, 0, 0.3);
+            border: 2px solid #b22222;
+            border-radius: 8px;
+            padding: 15px;
+            color: #ff6b6b;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .info-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .info-box strong {
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .mode-btn {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            color: #d4af37;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .mode-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .mode-btn.selected {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .wallet-display {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            border: 3px solid #00ff00;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .wallet-label {
+            font-size: 1.2em;
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .wallet-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+
+        .date-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .date-box {
+            background: rgba(26, 26, 46, 0.7);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .date-label {
+            font-size: 0.9em;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .date-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .profit-box {
+            background: linear-gradient(135deg, rgba(0, 100, 0, 0.3) 0%, rgba(0, 150, 0, 0.3) 100%);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .loss-box {
+            background: linear-gradient(135deg, rgba(100, 0, 0, 0.3) 0%, rgba(150, 0, 0, 0.3) 100%);
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.2);
+        }
+
+        .profit-label {
+            font-size: 0.9em;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+
+        .loss-label {
+            font-size: 0.9em;
+            color: #ff4444;
+            margin-bottom: 5px;
+        }
+
+        .profit-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .loss-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ff4444;
+            text-shadow: 0 0 10px #ff4444;
+        }
+
+        .bot-status {
+            background: rgba(0, 100, 150, 0.3);
+            border: 2px solid #0088cc;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .bot-label {
+            font-size: 0.9em;
+            color: #0088cc;
+            margin-bottom: 5px;
+        }
+
+        .bot-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #00ccff;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .entry-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .date-stats {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+            animation: blink 1.5s infinite;
+        }
+
+        .status-active {
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚜️ الاستراتيجية الذهبية ⚜️</h1>
+            <p>نظام التداول الاحترافي - Golden Trading Strategy</p>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>🪙 اختيار العملة</h2>
+                
+                <div class="bot-status">
+                    <div class="bot-label">🤖 حالة البوت التليجرام</div>
+                    <div class="bot-value" id="botStatus">🟢 نشط وجاهز</div>
+                </div>
+                
+                <div class="date-stats">
+                    <div class="date-box">
+                        <div class="date-label">📅 تاريخ اليوم</div>
+                        <div class="date-value" id="todayDate">-</div>
+                    </div>
+                    <div class="profit-box">
+                        <div class="profit-label">📈 نسبة الربح</div>
+                        <div class="profit-value" id="profitPercent">-</div>
+                    </div>
+                    <div class="loss-box">
+                        <div class="loss-label">📉 نسبة الخسارة</div>
+                        <div class="loss-value" id="lossPercent">-</div>
+                    </div>
+                </div>
+                
+                <div class="info-box" style="margin-bottom: 20px;">
+                    <strong>⏰ شمعة 00:00 UTC:</strong><br>
+                    نستخدمها لتحديد Low و High فقط (لا للتداول)
+                </div>
+                
+                <div class="input-group">
+                    <label>رمز العملة (Symbol)</label>
+                    <input type="text" id="symbolInput" placeholder="مثال: BTC, ETH, POWER (اضغط ENTER)" value="BTC">
+                </div>
+                <button class="btn btn-activate" onclick="loadCryptoData()" style="width: 100%;">
+                    ⚡ تحميل البيانات (ENTER)
+                </button>
+
+                <div class="wallet-display" style="margin-top: 20px;">
+                    <div class="wallet-label">💰 المحفظة الافتراضية</div>
+                    <div class="wallet-value" id="walletBalance">$1,000.00</div>
+                    <div style="color: #d4af37; font-size: 0.9em; margin-top: 5px;">
+                        رصيد افتراضي للتجربة
+                    </div>
+                </div>
+
+                <div id="currentPriceDisplay" style="display: none;">
+                    <div class="price-display" style="margin-top: 20px;">
+                        <div class="price-label">💰 السعر الحالي <span class="status-indicator status-active"></span></div>
+                        <div class="price-value" id="currentPrice">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 بيانات شمعة 00:00 UTC</h2>
+                <div id="candleData" style="display: none;">
+                    <div class="entry-prices">
+                        <div class="entry-header">
+                            ⭐ السعرين الوحيدين للدخول ⭐
+                        </div>
+                        <div class="entry-grid">
+                            <div class="entry-box">
+                                <div class="entry-type">📈 دخول لونج (Long)</div>
+                                <div class="entry-price" id="longEntry">-</div>
+                                <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">High Price</div>
+                            </div>
+                            <div class="entry-box">
+                                <div class="entry-type">📉 دخول شورت (Short)</div>
+                                <div class="entry-price" id="shortEntry">-</div>
+                                <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">Low Price</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>⚠️ تنبيه هام:</strong><br>
+                        الدخول يتم فقط عند كسر أحد هذين السعرين!<br>
+                        <span style="color: #ffd700; font-size: 0.9em;">
+                            (شمعة 00:00 تستخدم لتحديد الأسعار فقط)
+                        </span>
+                    </div>
+                </div>
+
+                <div id="loadingCandle" class="loading" style="display: none;">
+                    ⏳ جاري تحميل بيانات الشمعة...
+                </div>
+
+                <div id="errorCandle" class="error" style="display: none;"></div>
+            </div>
+
+            <div class="card full-width">
+                <h2>⚙️ إعدادات التداول</h2>
+                
+                <div style="margin-bottom: 25px;">
+                    <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 وضع التداول</h3>
+                    <div class="mode-selector">
+                        <div class="mode-btn selected" onclick="selectMode('isolated')" id="isolatedMode">
+                            🛡️ معزول (Isolated)
+                        </div>
+                        <div class="mode-btn" onclick="selectMode('cross')" id="crossMode">
+                            🔄 متبادل (Cross)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>الرافعة المالية (Leverage)</span>
+                        <span id="leverageValue">1x</span>
+                    </div>
+                    <input type="range" id="leverageSlider" min="1" max="200" value="1" oninput="updateLeverage(this.value)">
+                    <div style="color: #d4af37; font-size: 0.9em; text-align: center; margin-top: 5px;">
+                        الحد الأقصى: 200x
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>نسبة الحجز (Margin %)</span>
+                        <span id="marginValue">50%</span>
+                    </div>
+                    <input type="range" id="marginSlider" min="1" max="100" value="50" oninput="updateMargin(this.value)">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>الكمية (Quantity %)</span>
+                        <span id="quantityValue">10%</span>
+                    </div>
+                    <input type="range" id="quantitySlider" min="1" max="100" value="10" oninput="updateQuantity(this.value)">
+                    <div style="color: #d4af37; font-size: 0.9em; text-align: center; margin-top: 5px;">
+                        نسبة من المحفظة: <span id="calculatedAmount">$100.00</span>
+                    </div>
+                </div>
+
+                <div class="targets-container">
+                    <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 الأهداف العامة</h3>
+                    
+                    <div id="longTargets" style="margin-bottom: 25px;">
+                        <h4 style="text-align: center; color: #00ff00; margin-bottom: 10px;">📈 أهداف اللونج (Long)</h4>
+                        <div class="target-row" onclick="selectTarget('long', 1)">
+                            <span class="target-label">🎯 هدف 1</span>
+                            <span class="target-percent">1%</span>
+                            <span class="target-price" id="longTarget1">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('long', 2)">
+                            <span class="target-label">🎯 هدف 2</span>
+                            <span class="target-percent">2%</span>
+                            <span class="target-price" id="longTarget2">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('long', 3)">
+                            <span class="target-label">🎯 هدف 3</span>
+                            <span class="target-percent">3%</span>
+                            <span class="target-price" id="longTarget3">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('long', 4)">
+                            <span class="target-label">🎯 هدف 4</span>
+                            <span class="target-percent">4%</span>
+                            <span class="target-price" id="longTarget4">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('long', 5)">
+                            <span class="target-label">🎯 هدف 5</span>
+                            <span class="target-percent">5%</span>
+                            <span class="target-price" id="longTarget5">-</span>
+                        </div>
+                    </div>
+                    
+                    <div id="shortTargets">
+                        <h4 style="text-align: center; color: #ff4444; margin-bottom: 10px;">📉 أهداف الشورت (Short)</h4>
+                        <div class="target-row" onclick="selectTarget('short', 1)">
+                            <span class="target-label">🎯 هدف 1</span>
+                            <span class="target-percent">1%</span>
+                            <span class="target-price" id="shortTarget1">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('short', 2)">
+                            <span class="target-label">🎯 هدف 2</span>
+                            <span class="target-percent">2%</span>
+                            <span class="target-price" id="shortTarget2">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('short', 3)">
+                            <span class="target-label">🎯 هدف 3</span>
+                            <span class="target-percent">3%</span>
+                            <span class="target-price" id="shortTarget3">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('short', 4)">
+                            <span class="target-label">🎯 هدف 4</span>
+                            <span class="target-percent">4%</span>
+                            <span class="target-price" id="shortTarget4">-</span>
+                        </div>
+                        <div class="target-row" onclick="selectTarget('short', 5)">
+                            <span class="target-label">🎯 هدف 5</span>
+                            <span class="target-percent">5%</span>
+                            <span class="target-price" id="shortTarget5">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <strong>🛡️ الستوب لوس (Stop Loss):</strong><br>
+                    يتم تفعيله تلقائياً عند 0% (سعر الدخول المعاكس)
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-activate" onclick="activateStrategy()">
+                        ✅ تفعيل الاستراتيجية
+                    </button>
+                    <button class="btn btn-cancel" onclick="cancelStrategy()">
+                        ❌ إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // إعدادات البوت التليجرام
+        const BOT_TOKEN = '8575662863:AAFvaDlDKRNX9c6kSB6iHST30TIZf1nqzMo';
+        const CHAT_ID = '5155984592';
+        
+        let currentSymbol = 'BTCUSDT';
+        let candleData = null;
+        let priceUpdateInterval = null;
+        let selectedMode = 'isolated';
+        let selectedLongTarget = 1;
+        let selectedShortTarget = 1;
+        let marginPercent = 50;
+        let leverage = 1;
+        let quantityPercent = 10;
+        let walletBalance = 1000.00;
+        let todayProfitPercent = 0;
+        let todayLossPercent = 0;
+        let isStrategyActive = false;
+        let tradeStatus = null;
+        let enteredPrice = 0;
+        let isLongPosition = false;
+        let hitTargets = {};
+        let stopHit = false;
+
+        // دالة إرسال رسالة إلى البوت
+        async function sendTelegramMessage(message) {
+            try {
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('تم إرسال الرسالة إلى البوت:', data.ok ? '✅' : '❌');
+                return data.ok;
+            } catch (error) {
+                console.error('خطأ في إرسال الرسالة:', error);
+                return false;
+            }
+        }
+
+        // تحديث التاريخ ونسب الربح/الخسارة
+        function updateDateAndStats() {
+            const today = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                timeZone: 'UTC'
+            };
+            const dateStr = today.toLocaleDateString('ar-SA', options);
+            document.getElementById('todayDate').textContent = dateStr;
+            
+            // توليد نسب عشوائية للربح والخسارة (للتجربة فقط)
+            todayProfitPercent = (Math.random() * 15 + 1).toFixed(1); // بين 1% و 16%
+            todayLossPercent = (Math.random() * 10 + 1).toFixed(1);   // بين 1% و 11%
+            
+            document.getElementById('profitPercent').textContent = todayProfitPercent + '%';
+            document.getElementById('lossPercent').textContent = todayLossPercent + '%';
+        }
+
+        // دالة مراقبة الأسعار وإرسال التنبيهات
+        async function monitorPrice() {
+            if (!isStrategyActive || !candleData) return;
+            
+            try {
+                const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${currentSymbol}`);
+                const data = await response.json();
+                
+                if (data.price) {
+                    const currentPrice = parseFloat(data.price);
+                    let message = '';
+                    
+                    // مراقبة دخول اللونج (Long Entry)
+                    if (currentPrice > candleData.high && tradeStatus !== 'long_entry') {
+                        tradeStatus = 'long_entry';
+                        enteredPrice = candleData.high;
+                        isLongPosition = true;
+                        hitTargets = {};
+                        stopHit = false;
+                        
+                        message = `
+🚨 <b>دخول صفقة لونج!</b>
+
+📊 العملة: ${currentSymbol}
+💰 السعر الحالي: $${currentPrice.toFixed(4)}
+📈 سعر الدخول: $${candleData.high.toFixed(4)}
+⚡ الرافعة: ${leverage}x
+
+🎯 <b>الأهداف:</b>
+🎯 هدف 1%: $${(candleData.high * 1.01).toFixed(4)}
+🎯 هدف 2%: $${(candleData.high * 1.02).toFixed(4)}
+🎯 هدف 3%: $${(candleData.high * 1.03).toFixed(4)}
+🎯 هدف 4%: $${(candleData.high * 1.04).toFixed(4)}
+🎯 هدف 5%: $${(candleData.high * 1.05).toFixed(4)}
+
+🛡️ الستوب: $${candleData.low.toFixed(4)} (0%)
+
+⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+                        `;
+                        sendTelegramMessage(message);
+                    }
+                    
+                    // مراقبة دخول الشورت (Short Entry)
+                    if (currentPrice < candleData.low && tradeStatus !== 'short_entry') {
+                        tradeStatus = 'short_entry';
+                        enteredPrice = candleData.low;
+                        isLongPosition = false;
+                        hitTargets = {};
+                        stopHit = false;
+                        
+                        message = `
+🚨 <b>دخول صفقة شورت!</b>
+
+📊 العملة: ${currentSymbol}
+💰 السعر الحالي: $${currentPrice.toFixed(4)}
+📉 سعر الدخول: $${candleData.low.toFixed(4)}
+⚡ الرافعة: ${leverage}x
+
+🎯 <b>الأهداف:</b>
+🎯 هدف 1%: $${(candleData.low * 0.99).toFixed(4)}
+🎯 هدف 2%: $${(candleData.low * 0.98).toFixed(4)}
+🎯 هدف 3%: $${(candleData.low * 0.97).toFixed(4)}
+🎯 هدف 4%: $${(candleData.low * 0.96).toFixed(4)}
+🎯 هدف 5%: $${(candleData.low * 0.95).toFixed(4)}
+
+🛡️ الستوب: $${candleData.high.toFixed(4)} (0%)
+
+⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+                        `;
+                        sendTelegramMessage(message);
+                    }
+                    
+                    // مراقبة ضرب أهداف اللونج (كل هدف على حدة)
+                    if (tradeStatus === 'long_entry') {
+                        for (let i = 1; i <= 5; i++) {
+                            const targetPercent = i;
+                            const targetPrice = candleData.high * (1 + (targetPercent * 0.01));
+                            
+                            // تحقق إذا كان السعر وصل لهذا الهدف ولم يتم إرسال إشعار له
+                            if (currentPrice >= targetPrice && !hitTargets[`long_${targetPercent}`]) {
+                                hitTargets[`long_${targetPercent}`] = true;
+                                tradeStatus = 'hit_target';
+                                
+                                // حساب الربح مع ضرب في الرافعة
+                                const profitWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(2);
+                                const profitWithLeverage = (profitWithoutLeverage * leverage).toFixed(2);
+                                const tradeAmount = updateCalculatedAmount();
+                                const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
+                                
+                                message = `
+✅ <b>تم تحقيق الهدف ${targetPercent}%! (لونج)</b>
+
+📊 العملة: ${currentSymbol}
+💰 سعر الدخول: $${candleData.high.toFixed(4)}
+💰 سعر الخروج: $${currentPrice.toFixed(4)}
+⚡ الرافعة: ${leverage}x
+
+📊 <b>الربح:</b>
+📈 بدون رافعة: ${profitWithoutLeverage}%
+⚡ مع الرافعة: ${profitWithLeverage}%
+
+🎯 الهدف المحقق: ${targetPercent}%
+
+💰 <b>التفاصيل المالية:</b>
+💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
+💵 الربح بالرافعة: $${profitAmount}
+
+🎉 مبروك! الصفقة ناجحة
+
+⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+                                `;
+                                sendTelegramMessage(message);
+                                
+                                // تحديث المحفظة
+                                walletBalance += parseFloat(profitAmount);
+                                updateCalculatedAmount();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // مراقبة ضرب أهداف الشورت (كل هدف على حدة)
+                    if (tradeStatus === 'short_entry') {
+                        for (let i = 1; i <= 5; i++) {
+                            const targetPercent = i;
+                            const targetPrice = candleData.low * (1 - (targetPercent * 0.01));
+                            
+                            // تحقق إذا كان السعر وصل لهذا الهدف ولم يتم إرسال إشعار له
+                            if (currentPrice <= targetPrice && !hitTargets[`short_${targetPercent}`]) {
+                                hitTargets[`short_${targetPercent}`] = true;
+                                tradeStatus = 'hit_target';
+                                
+                                // حساب الربح مع ضرب في الرافعة
+                                const profitWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(2);
+                                const profitWithLeverage = (profitWithoutLeverage * leverage).toFixed(2);
+                                const tradeAmount = updateCalculatedAmount();
+                                const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
+                                
+                                message = `
+✅ <b>تم تحقيق الهدف ${targetPercent}%! (شورت)</b>
+
+📊 العملة: ${currentSymbol}
+💰 سعر الدخول: $${candleData.low.toFixed(4)}
+💰 سعر الخروج: $${currentPrice.toFixed(4)}
+⚡ الرافعة: ${leverage}x
+
+📊 <b>الربح:</b>
+📈 بدون رافعة: ${profitWithoutLeverage}%
+⚡ مع الرافعة: ${profitWithLeverage}%
+
+🎯 الهدف المحقق: ${targetPercent}%
+
+💰 <b>التفاصيل المالية:</b>
+💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
+💵 الربح بالرافعة: $${profitAmount}
+
+🎉 مبروك! الصفقة ناجحة
+
+⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+                                `;
+                                sendTelegramMessage(message);
+                                
+                                // تحديث المحفظة
+                                walletBalance += parseFloat(profitAmount);
+                                updateCalculatedAmount();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // مراقبة ضرب الستوب للونج
+                    if (tradeStatus === 'long_entry' && !stopHit) {
+                        if (currentPrice <= candleData.low) {
+                            stopHit = true;
+                            tradeStatus = 'hit_stop';
+                            
+                            // حساب الخسارة مع ضرب في الرافعة
+                            const lossWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(2);
+                            const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(2);
+                            const tradeAmount = updateCalculatedAmount();
+                            const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
+                            
+                            message = `
+❌ <b>تم ضرب الستوب! (لونج)</b>
+
+📊 العملة: ${currentSymbol}
+💰 سعر الدخول: $${candleData.high.toFixed(4)}
+💰 سعر الخروج: $${currentPrice.toFixed(4)}
+⚡ الرافعة: ${leverage}x
+
+📊 <b>الخسارة:</b>
+📉 بدون رافعة: ${lossWithoutLeverage}%
+⚡ مع الرافعة: ${lossWithLeverage}%
+
+💰 <b>التفاصيل المالية:</b>
+💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
+💵 الخسارة بالرافعة: $${lossAmount}
+
+⚠️ تم إغلاق الصفقة بخسارة
+
+⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+                            `;
+                            sendTelegramMessage(message);
+                            
+                            // تحديث المحفظة
+                            walletBalance -= parseFloat(lossAmount);
+                            updateCalculatedAmount();
+                        }
+                    }
+                    
+                    // مراقبة ضرب الستوب للشورت
+                    if (tradeStatus === 'short_entry' && !stopHit) {
+                        if (currentPrice >= candleData.high) {
+                            stopHit = true;
+                            tradeStatus = 'hit_stop';
+                            
+                            // حساب الخسارة مع ضرب في الرافعة
+                            const lossWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(2);
+                            const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(2);
+                            const tradeAmount = updateCalculatedAmount();
+                            const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
+                            
+                            message = `
+❌ <b>تم ضرب الستوب! (شورت)</b>
+
+📊 العملة: ${currentSymbol}
+💰 سعر الدخول: $${candleData.high.toFixed(4)}
+💰 سعر الخروج: $${currentPrice.toFixed(4)}
+⚡ الرافعة: ${leverage}x
+
+📊 <b>الخسارة:</b>
+📉 بدون رافعة: ${lossWithoutLeverage}%
+⚡ مع الرافعة: ${lossWithLeverage}%
+
+💰 <b>التفاصيل المالية:</b>
+💵 المبلغ الأصلي: $${tradeAmount.toFixed(2)}
+💵 الخسارة بالرافعة: $${lossAmount}
+
+⚠️ تم إغلاق الصفقة بخسارة
+
+⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+                            `;
+                            sendTelegramMessage(message);
+                            
+                            // تحديث المحفظة
+                            walletBalance -= parseFloat(lossAmount);
+                            updateCalculatedAmount();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('خطأ في مراقبة السعر:', error);
+            }
+        }
+
+        // دالة إرسال تقرير نهاية اليوم
+        function sendEndOfDayReport() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ar-SA', {
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+            });
+            
+            let tradeSummary = '';
+            let profitLossToday = 0;
+            
+            if (tradeStatus === 'hit_target') {
+                tradeSummary = '✅ تم تحقيق الأهداف بنجاح!';
+                profitLossToday = (Math.random() * 10 + 2); // ربح إيجابي
+            } else if (tradeStatus === 'hit_stop') {
+                tradeSummary = '❌ بعض الصفقات أغلقت بالستوب';
+                profitLossToday = -(Math.random() * 5 + 1); // خسارة
+            } else if (tradeStatus === 'long_entry' || tradeStatus === 'short_entry') {
+                tradeSummary = '🔄 صفقات مفتوحة';
+                profitLossToday = (Math.random() * 3 - 1.5).toFixed(2); // ربح أو خسارة بسيطة
+            } else {
+                tradeSummary = '📊 لا توجد صفقات نشطة اليوم';
+                profitLossToday = 0;
+            }
+            
+            // تحديث المحفظة بناءً على نتيجة اليوم
+            const dailyChange = (walletBalance * profitLossToday / 100);
+            walletBalance += dailyChange;
+            
+            const message = `
+📊 <b>تقرير نهاية اليوم</b>
+
+📅 التاريخ: ${dateStr}
+🕒 وقت التقرير: ${today.toLocaleTimeString('ar-SA')}
+
+📈 <b>إحصائيات اليوم:</b>
+📊 نسبة الربح اليومية: ${todayProfitPercent}%
+📉 نسبة الخسارة اليومية: ${todayLossPercent}%
+💰 صافي الربح/الخسارة: ${profitLossToday > 0 ? '+' : ''}${profitLossToday.toFixed(2)}%
+
+💰 <b>حالة المحفظة:</b>
+🏦 رصيد البداية: $1000.00
+💰 الرصيد الحالي: $${walletBalance.toFixed(2)}
+📊 التغير اليومي: $${dailyChange.toFixed(2)} (${profitLossToday > 0 ? '+' : ''}${profitLossToday.toFixed(2)}%)
+
+🔔 <b>ملخص نشاط اليوم:</b>
+${tradeSummary}
+
+${profitLossToday > 0 ? '🎉 يوم رابح! استمر في التقدم!' : 
+  profitLossToday < 0 ? '⚠️ يوم بخسارة صغيرة، لا تقلق وغداً أفضل!' : 
+  '📊 يوم متعادل، الفرص تأتي غداً!'}
+
+🔜 نراك غداً بإذن الله!
+            `;
+            
+            sendTelegramMessage(message);
+            
+            // إعادة تعيين حالة التداول لليوم التالي
+            tradeStatus = null;
+            hitTargets = {};
+            stopHit = false;
+            
+            // تحديث العرض
+            updateDateAndStats();
+        }
+
+        function selectMode(mode) {
+            selectedMode = mode;
+            
+            // تحديث الأزرار
+            document.getElementById('isolatedMode').classList.remove('selected');
+            document.getElementById('crossMode').classList.remove('selected');
+            document.getElementById(mode + 'Mode').classList.add('selected');
+        }
+
+        function updateLeverage(value) {
+            leverage = parseInt(value);
+            document.getElementById('leverageValue').textContent = leverage + 'x';
+            updateCalculatedAmount();
+        }
+
+        function updateMargin(value) {
+            marginPercent = parseInt(value);
+            document.getElementById('marginValue').textContent = marginPercent + '%';
+            updateCalculatedAmount();
+        }
+
+        function updateQuantity(value) {
+            quantityPercent = parseInt(value);
+            document.getElementById('quantityValue').textContent = quantityPercent + '%';
+            updateCalculatedAmount();
+        }
+
+        function updateCalculatedAmount() {
+            // حساب المبلغ بناءً على نسبة الكمية من المحفظة
+            const amount = (walletBalance * (quantityPercent / 100)).toFixed(2);
+            document.getElementById('calculatedAmount').textContent = '$' + amount;
+            
+            // تحديث عرض المحفظة
+            document.getElementById('walletBalance').textContent = '$' + walletBalance.toFixed(2);
+            
+            return parseFloat(amount);
+        }
+
+        function selectTarget(type, targetNum) {
+            if (type === 'long') {
+                selectedLongTarget = targetNum;
+                
+                // إزالة التحديد من جميع أهداف اللونج
+                document.querySelectorAll('#longTargets .target-row').forEach(row => {
+                    row.classList.remove('selected');
+                });
+                
+                // تحديد الهدف المختار
+                event.currentTarget.classList.add('selected');
+            } else {
+                selectedShortTarget = targetNum;
+                
+                // إزالة التحديد من جميع أهداف الشورت
+                document.querySelectorAll('#shortTargets .target-row').forEach(row => {
+                    row.classList.remove('selected');
+                });
+                
+                // تحديد الهدف المختار
+                event.currentTarget.classList.add('selected');
+            }
+            
+            updateTargetPrices();
+        }
+
+        function updateTargetPrices() {
+            if (!candleData) return;
+            
+            const longEntry = candleData.high;
+            const shortEntry = candleData.low;
+            
+            // حساب أسعار أهداف اللونج (زيادة)
+            for (let i = 1; i <= 5; i++) {
+                const targetPrice = longEntry * (1 + (i * 0.01));
+                document.getElementById('longTarget' + i).textContent = '$' + targetPrice.toFixed(4);
+            }
+            
+            // حساب أسعار أهداف الشورت (نقصان)
+            for (let i = 1; i <= 5; i++) {
+                const targetPrice = shortEntry * (1 - (i * 0.01));
+                document.getElementById('shortTarget' + i).textContent = '$' + targetPrice.toFixed(4);
+            }
+        }
+
+        async function loadCryptoData() {
+            const symbolInput = document.getElementById('symbolInput').value.trim().toUpperCase();
+            
+            if (!symbolInput) {
+                alert('⚠️ الرجاء إدخال رمز العملة');
+                return;
+            }
+
+            // إخفاء الأخطاء السابقة
+            document.getElementById('errorCandle').style.display = 'none';
+            
+            // عرض مؤشر التحميل
+            document.getElementById('loadingCandle').style.display = 'block';
+            document.getElementById('candleData').style.display = 'none';
+
+            try {
+                // البحث عن الرمز في exchangeInfo أولاً
+                const exchangeInfo = await fetch('https://api.binance.com/api/v3/exchangeInfo');
+                const infoData = await exchangeInfo.json();
+                
+                const allSymbols = infoData.symbols.map(s => s.symbol);
+                let foundSymbol = null;
+                
+                // البحث عن جميع الاحتمالات
+                const possibleSymbols = [
+                    symbolInput + 'USDT',    // مثل BTCUSDT
+                    'USDT' + symbolInput,    // مثل USDTTRY
+                    symbolInput + 'BUSD',    // مثل BTCBUSD
+                    'BUSD' + symbolInput,    // مثل BUSDTRY
+                    symbolInput + 'BTC',     // مثل ETHBTC
+                    symbolInput + 'ETH',     // مثل LTCETH
+                    symbolInput              // مثل BTC (قد يكون اسم الرمز نفسه)
+                ];
+                
+                // البحث عن POWERUSDT تحديداً
+                if (symbolInput === 'POWER' || symbolInput === 'POWERUSDT') {
+                    if (allSymbols.includes('POWERUSDT')) {
+                        foundSymbol = 'POWERUSDT';
+                    }
+                }
+                
+                // إذا لم يكن POWER، نبحث عن الاحتمالات الأخرى
+                if (!foundSymbol) {
+                    for (const symbol of possibleSymbols) {
+                        if (allSymbols.includes(symbol)) {
+                            foundSymbol = symbol;
+                            break;
+                        }
+                    }
+                }
+                
+                // إذا لم نجد الرمز بعد، نبحث في أسماء الرموز
+                if (!foundSymbol) {
+                    for (const symbol of allSymbols) {
+                        const baseAsset = infoData.symbols.find(s => s.symbol === symbol)?.baseAsset;
+                        if (baseAsset === symbolInput) {
+                            // نبحث عن أول زوج مع USDT أو BUSD
+                            if (symbol.includes('USDT') || symbol.includes('BUSD')) {
+                                foundSymbol = symbol;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if (!foundSymbol) {
+                    throw new Error(`العملة ${symbolInput} غير موجودة في Binance\n\n🔍 جرب عملة أخرى مثل:\nBTC, ETH, BNB, XRP, ADA, SOL, DOGE, OP, POWER...`);
+                }
+                
+                currentSymbol = foundSymbol;
+                const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=24`);
+                
+                if (!response.ok) {
+                    throw new Error(`العملة ${symbolInput} موجودة ولكن لا توجد بيانات كافية`);
+                }
+                
+                const data = await response.json();
+                processCandleData(data);
+
+            } catch (error) {
+                document.getElementById('loadingCandle').style.display = 'none';
+                document.getElementById('errorCandle').textContent = '❌ ' + error.message;
+                document.getElementById('errorCandle').style.display = 'block';
+            }
+        }
+
+        async function processCandleData(data) {
+            if (data.length === 0) {
+                throw new Error('لا توجد بيانات لهذه العملة');
+            }
+
+            // البحث عن شمعة الساعة 00:00 UTC
+            let midnightCandle = null;
+            
+            for (const candle of data) {
+                const timestamp = candle[0];
+                const date = new Date(timestamp);
+                const hours = date.getUTCHours();
+                
+                // الشمعة التي تبدأ عند 00:00 UTC بالتحديد
+                if (hours === 0) {
+                    midnightCandle = candle;
+                    break;
+                }
+            }
+
+            // إذا لم نجد شمعة 00:00 في آخر 24 ساعة، نجلب المزيد
+            if (!midnightCandle) {
+                const moreResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=48`);
+                const moreData = await moreResponse.json();
+                
+                for (const candle of moreData) {
+                    const timestamp = candle[0];
+                    const date = new Date(timestamp);
+                    const hours = date.getUTCHours();
+                    
+                    if (hours === 0) {
+                        midnightCandle = candle;
+                        break;
+                    }
+                }
+            }
+
+            if (!midnightCandle) {
+                throw new Error('لم يتم العثور على شمعة 00:00 UTC');
+            }
+
+            candleData = {
+                high: parseFloat(midnightCandle[2]),
+                low: parseFloat(midnightCandle[3]),
+                symbol: currentSymbol
+            };
+
+            // عرض البيانات
+            document.getElementById('longEntry').textContent = '$' + candleData.high.toFixed(4);
+            document.getElementById('shortEntry').textContent = '$' + candleData.low.toFixed(4);
+            
+            document.getElementById('loadingCandle').style.display = 'none';
+            document.getElementById('candleData').style.display = 'block';
+
+            // تحديث أسعار الأهداف
+            updateTargetPrices();
+            
+            // تحديد الافتراضي للأهداف
+            document.querySelectorAll('#longTargets .target-row')[0].classList.add('selected');
+            document.querySelectorAll('#shortTargets .target-row')[0].classList.add('selected');
+
+            // بدء تحديث السعر الحالي
+            startPriceUpdates();
+            
+            // تحديث المبلغ المحسوب
+            updateCalculatedAmount();
+        }
+
+        async function updateCurrentPrice() {
+            try {
+                const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${currentSymbol}`);
+                const data = await response.json();
+                
+                if (data.price) {
+                    const price = parseFloat(data.price);
+                    document.getElementById('currentPrice').textContent = '$' + price.toFixed(4);
+                    document.getElementById('currentPriceDisplay').style.display = 'block';
+                    
+                    // مراقبة الأسعار إذا كانت الاستراتيجية مفعلة
+                    if (isStrategyActive) {
+                        monitorPrice();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating price:', error);
+            }
+        }
+
+        function startPriceUpdates() {
+            // إيقاف التحديثات السابقة إن وجدت
+            if (priceUpdateInterval) {
+                clearInterval(priceUpdateInterval);
+            }
+
+            // تحديث السعر الحالي فوراً
+            updateCurrentPrice();
+
+            // تحديث السعر كل 3 ثواني
+            priceUpdateInterval = setInterval(updateCurrentPrice, 3000);
+        }
+
+        async function activateStrategy() {
+            if (!candleData) {
+                alert('⚠️ الرجاء تحميل بيانات العملة أولاً');
+                return;
+            }
+
+            const modeText = selectedMode === 'isolated' ? 'معزول 🛡️' : 'متبادل 🔄';
+            const tradeAmount = updateCalculatedAmount();
+            const marginAmount = (tradeAmount * (marginPercent / 100)).toFixed(2);
+            const leveragedAmount = (tradeAmount * leverage).toFixed(2);
+
+            // إرسال رسالة البوت الأولى
+            const botMessage = `
+🤖 <b>تم تفعيل الاستراتيجية الذهبية!</b>
+
+📊 العملة: ${currentSymbol}
+💰 السعر الحالي: $${parseFloat(document.getElementById('currentPrice').textContent.replace('$', '')).toFixed(4)}
+📈 High (دخول لونج): $${candleData.high.toFixed(4)}
+📉 Low (دخول شورت): $${candleData.low.toFixed(4)}
+
+⚙️ <b>الإعدادات:</b>
+📊 الوضع: ${modeText}
+💰 الرافعة: ${leverage}x
+📊 نسبة الحجز: ${marginPercent}%
+📈 الكمية: ${quantityPercent}% من المحفظة
+
+🎯 <b>الأهداف (لكل هدف إشعار منفصل):</b>
+📈 هدف اللونج 1%: $${(candleData.high * 1.01).toFixed(4)}
+📈 هدف اللونج 2%: $${(candleData.high * 1.02).toFixed(4)}
+📈 هدف اللونج 3%: $${(candleData.high * 1.03).toFixed(4)}
+📈 هدف اللونج 4%: $${(candleData.high * 1.04).toFixed(4)}
+📈 هدف اللونج 5%: $${(candleData.high * 1.05).toFixed(4)}
+
+📉 هدف الشورت 1%: $${(candleData.low * 0.99).toFixed(4)}
+📉 هدف الشورت 2%: $${(candleData.low * 0.98).toFixed(4)}
+📉 هدف الشورت 3%: $${(candleData.low * 0.97).toFixed(4)}
+📉 هدف الشورت 4%: $${(candleData.low * 0.96).toFixed(4)}
+📉 هدف الشورت 5%: $${(candleData.low * 0.95).toFixed(4)}
+
+🛡️ <b>الستوب لوس:</b>
+📈 ستوب اللونج: $${candleData.low.toFixed(4)} (0%)
+📉 ستوب الشورت: $${candleData.high.toFixed(4)} (0%)
+
+💰 <b>المعلومات المالية:</b>
+💵 المبلغ: $${tradeAmount.toFixed(2)}
+🛡️ الحجز: $${marginAmount}
+⚡ بالرافعة: $${leveragedAmount}
+
+⏰ وقت التفعيل: ${new Date().toLocaleTimeString('ar-SA')}
+📅 التاريخ: ${new Date().toLocaleDateString('ar-SA')}
+
+🔔 <b>سيرسل البوت تنبيهات تلقائية عند:</b>
+🚨 دخول صفقة لونج/شورت
+✅ تحقيق كل هدف (1%-5%) مع الربح بالرافعة
+❌ ضرب الستوب 0%
+📊 تقرير نهاية اليوم مع حصيلة الربح/الخسارة
+            `;
+
+            const botSent = await sendTelegramMessage(botMessage);
+            
+            if (botSent) {
+                // تفعيل مراقبة الأسعار
+                isStrategyActive = true;
+                tradeStatus = null; // إعادة تعيين حالة التداول
+                hitTargets = {};
+                stopHit = false;
+                
+                const message = `
+🎯 تم تفعيل الاستراتيجية الذهبية!
+
+📅 إحصائيات اليوم:
+   📈 نسبة الربح: ${todayProfitPercent}%
+   📉 نسبة الخسارة: ${todayLossPercent}%
+
+📊 العملة: ${currentSymbol}
+📊 الوضع: ${modeText}
+💰 الرافعة المالية: ${leverage}x
+📊 نسبة الحجز: ${marginPercent}%
+📈 الكمية: ${quantityPercent}% من المحفظة
+
+💰 **المحفظة:**
+   🏦 الرصيد: $${walletBalance.toFixed(2)}
+   💰 مبلغ التداول: $${tradeAmount.toFixed(2)}
+   🛡️ مبلغ الحجز: $${marginAmount}
+   ⚡ المبلغ برافعة: $${leveragedAmount}
+
+📈 **إعدادات اللونج (Long):**
+   🎯 نقطة الدخول: $${candleData.high.toFixed(4)}
+   🎯 الهدف 1%: $${(candleData.high * 1.01).toFixed(4)}
+   🎯 الهدف 2%: $${(candleData.high * 1.02).toFixed(4)}
+   🎯 الهدف 3%: $${(candleData.high * 1.03).toFixed(4)}
+   🎯 الهدف 4%: $${(candleData.high * 1.04).toFixed(4)}
+   🎯 الهدف 5%: $${(candleData.high * 1.05).toFixed(4)}
+   🛡️ الستوب لوس: $${candleData.low.toFixed(4)} (0%)
+
+📉 **إعدادات الشورت (Short):**
+   🎯 نقطة الدخول: $${candleData.low.toFixed(4)}
+   🎯 الهدف 1%: $${(candleData.low * 0.99).toFixed(4)}
+   🎯 الهدف 2%: $${(candleData.low * 0.98).toFixed(4)}
+   🎯 الهدف 3%: $${(candleData.low * 0.97).toFixed(4)}
+   🎯 الهدف 4%: $${(candleData.low * 0.96).toFixed(4)}
+   🎯 الهدف 5%: $${(candleData.low * 0.95).toFixed(4)}
+   🛡️ الستوب لوس: $${candleData.high.toFixed(4)} (0%)
+
+⚠️ **ملاحظة:** شمعة 00:00 تستخدم لتحديد Low و High فقط
+
+🤖 **تم إرسال تفاصيل الاستراتيجية إلى البوت التليجرام!**
+✅ **الاستراتيجية جاهزة للتنفيذ!**
+✅ **سيتم إرسال إشعار لكل هدف يتحقق!**
+                `;
+
+                alert(message);
+            } else {
+                alert('⚠️ حدث خطأ في إرسال الرسالة للبوت. تأكد من اتصال الإنترنت.');
+            }
+        }
+
+        function cancelStrategy() {
+            if (confirm('❌ هل تريد إلغاء الاستراتيجية؟')) {
+                // إعادة تعيين القيم
+                document.getElementById('leverageSlider').value = 1;
+                document.getElementById('marginSlider').value = 50;
+                document.getElementById('quantitySlider').value = 10;
+                updateLeverage(1);
+                updateMargin(50);
+                updateQuantity(10);
+                
+                // إيقاف مراقبة الأسعار
+                isStrategyActive = false;
+                tradeStatus = null;
+                hitTargets = {};
+                stopHit = false;
+                
+                // إيقاف تحديثات السعر
+                if (priceUpdateInterval) {
+                    clearInterval(priceUpdateInterval);
+                }
+
+                alert('✅ تم إلغاء الاستراتيجية بنجاح');
+            }
+        }
+
+        // تفعيل زر ENTER في حقل الإدخال
+        document.getElementById('symbolInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                loadCryptoData();
+            }
+        });
+
+        // تحميل بيانات BTC تلقائياً عند فتح الصفحة
+        window.onload = function() {
+            // تحديث التاريخ والإحصائيات أولاً
+            updateDateAndStats();
+            
+            // ثم تحميل بيانات العملة
+            loadCryptoData();
+            
+            // جدولة إرسال تقرير نهاية اليوم (الساعة 23:55)
+            const now = new Date();
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 55, 0, 0);
+            
+            if (now < endOfDay) {
+                const timeUntilEnd = endOfDay.getTime() - now.getTime();
+                setTimeout(() => {
+                    sendEndOfDayReport();
+                    // جدولة يومي
+                    setInterval(sendEndOfDayReport, 24 * 60 * 60 * 1000);
+                }, timeUntilEnd);
+            }
+        };
+    </script>
+</body>
+</html>
