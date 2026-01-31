@@ -1552,6 +1552,38 @@ ${profitLossToday > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                     setInterval(sendEndOfDayReport, 24 * 60 * 60 * 1000);
                 }, timeUntilEnd);
             }
+            
+            // === إضافة: تقرير كل ساعة للتأكد من عمل النظام ===
+            let lastReportTime = 0;
+            
+            setInterval(async () => {
+                const now = Date.now();
+                // إرسال تقرير كل ساعة (3600000 ملي ثانية)
+                if (now - lastReportTime >= 3600000) {
+                    const currentTime = new Date().toLocaleTimeString('ar-SA');
+                    const currentPrice = document.getElementById('currentPrice')?.textContent || 'غير متاح';
+                    const symbol = currentSymbol || 'لم يتم التحديد';
+                    
+                    const reportMessage = `
+✅ <b>تقرير النشاط التلقائي</b>
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+🕒 الوقت: ${currentTime}
+📊 العملة: ${symbol}
+💰 السعر الحالي: ${currentPrice}
+🔔 الحالة: ${isStrategyActive ? '🟢 الاستراتيجية مفعلة' : '🟡 في انتظار التفعيل'}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+📈 النظام يعمل بشكل طبيعي
+                    `;
+                    
+                    try {
+                        await sendTelegramMessage(reportMessage);
+                        console.log(`✅ تم إرسال تقرير الساعة: ${currentTime}`);
+                        lastReportTime = now;
+                    } catch (error) {
+                        console.log('⚠️ فشل إرسال تقرير الساعة:', error);
+                    }
+                }
+            }, 60000); // التحقق كل دقيقة
         };
     </script>
 </body>
