@@ -848,6 +848,9 @@
         let lastEntryTime = 0;
         let entryCooldown = 5000; // 5 ثواني بين الصفقات لمنع التكرار السريع
         
+        // === متغير إضافي: تتبع إذا كانت هناك صفقة مفتوحة حالياً ===
+        let isTradeOpen = false; // NEW: لمنع دخول صفقة جديدة أثناء وجود صفقة مفتوحة
+
         // === متغيرات إضافية لضبط الوقت ===
         let avoidTradingPeriod = false;
         let lastCandleUpdate = null;
@@ -982,6 +985,7 @@
             enteredPrice = 0;
             stopHit = false;
             hitTargets = {};
+            isTradeOpen = false; // NEW: إعادة تعيين حالة الصفقة المفتوحة
             
             notificationSent.entryLong = false;
             notificationSent.entryShort = false;
@@ -1005,6 +1009,7 @@
             
             hitTargets = {};
             stopHit = false;
+            isTradeOpen = false; // NEW: تأكيد إعادة التعيين
             tradeStartTime = null;
             lastEntryTime = 0;
         }
@@ -1054,7 +1059,7 @@
                 const now = Date.now();
                 
                 // === مراقبة دخول اللونج ===
-                if (currentPrice > candleData.high && tradeStatus === 'waiting') {
+                if (currentPrice > candleData.high && tradeStatus === 'waiting' && !isTradeOpen) { // NEW: Added !isTradeOpen
                     // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
@@ -1066,6 +1071,7 @@
                     isLongPosition = true;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
+                    isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
                     
                     if (!notificationSent.entryLong) {
                         notificationSent.entryLong = true;
@@ -1095,7 +1101,7 @@
                 }
                 
                 // === مراقبة دخول الشورت ===
-                if (currentPrice < candleData.low && tradeStatus === 'waiting') {
+                if (currentPrice < candleData.low && tradeStatus === 'waiting' && !isTradeOpen) { // NEW: Added !isTradeOpen
                     // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
@@ -1107,6 +1113,7 @@
                     isLongPosition = false;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
+                    isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
                     
                     if (!notificationSent.entryShort) {
                         notificationSent.entryShort = true;
@@ -1181,8 +1188,22 @@
                                 false
                             );
                             
-                            // إعادة التعيين للصفقة التالية
-                            setTimeout(resetTradeState, 1000);
+                            // التحقق إذا تم تحقيق جميع الأهداف أو ضرب الستوب
+                            let allTargetsHit = true;
+                            for (let j = 1; j <= 5; j++) {
+                                if (!hitTargets[`long_${j}`]) {
+                                    allTargetsHit = false;
+                                    break;
+                                }
+                            }
+                            
+                            // إذا تم تحقيق جميع الأهداف أو ضرب الستوب، نغلق الصفقة
+                            if (allTargetsHit || stopHit) {
+                                setTimeout(() => {
+                                    resetTradeState();
+                                    console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف أو ضرب الستوب');
+                                }, 1000);
+                            }
                             break;
                         }
                     }
@@ -1234,8 +1255,22 @@
                                 false
                             );
                             
-                            // إعادة التعيين للصفقة التالية
-                            setTimeout(resetTradeState, 1000);
+                            // التحقق إذا تم تحقيق جميع الأهداف أو ضرب الستوب
+                            let allTargetsHit = true;
+                            for (let j = 1; j <= 5; j++) {
+                                if (!hitTargets[`short_${j}`]) {
+                                    allTargetsHit = false;
+                                    break;
+                                }
+                            }
+                            
+                            // إذا تم تحقيق جميع الأهداف أو ضرب الستوب، نغلق الصفقة
+                            if (allTargetsHit || stopHit) {
+                                setTimeout(() => {
+                                    resetTradeState();
+                                    console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف أو ضرب الستوب');
+                                }, 1000);
+                            }
                             break;
                         }
                     }
