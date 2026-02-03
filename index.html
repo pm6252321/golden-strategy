@@ -755,6 +755,9 @@
     </div>
 
     <script>
+        // === نظام الحفظ التلقائي في LocalStorage ===
+        const STORAGE_KEY = 'golden_strategy_saved_state';
+        
         // === WebSocket للأسعار الفورية ===
         let binanceWS = null;
         let wsReconnectTimer = null;
@@ -849,12 +852,163 @@
         let entryCooldown = 5000; // 5 ثواني بين الصفقات لمنع التكرار السريع
         
         // === متغير إضافي: تتبع إذا كانت هناك صفقة مفتوحة حالياً ===
-        let isTradeOpen = false; // NEW: لمنع دخول صفقة جديدة أثناء وجود صفقة مفتوحة
+        let isTradeOpen = false;
 
         // === متغيرات إضافية لضبط الوقت ===
         let avoidTradingPeriod = false;
         let lastCandleUpdate = null;
         let currentDay = null;
+
+        // === دالة حفظ الحالة تلقائياً ===
+        function saveStateToLocalStorage() {
+            const state = {
+                // الإعدادات الأساسية
+                currentSymbol: currentSymbol,
+                selectedMode: selectedMode,
+                marginPercent: marginPercent,
+                leverage: leverage,
+                quantityPercent: quantityPercent,
+                walletBalance: walletBalance,
+                isStrategyActive: isStrategyActive,
+                
+                // بيانات الشمعة
+                candleData: candleData,
+                
+                // الأهداف المختارة
+                selectedLongTarget: selectedLongTarget,
+                selectedShortTarget: selectedShortTarget,
+                
+                // الحالة الحالية
+                tradeCount: tradeCount,
+                todayTrades: todayTrades,
+                
+                // الإحصائيات
+                todayProfitPercent: todayProfitPercent,
+                todayLossPercent: todayLossPercent,
+                
+                // تاريخ التحديث
+                lastSaveTime: new Date().toISOString()
+            };
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            console.log('💾 تم حفظ الحالة تلقائياً:', new Date().toLocaleTimeString());
+        }
+
+        // === دالة استعادة الحالة من LocalStorage ===
+        function restoreStateFromLocalStorage() {
+            try {
+                const savedState = localStorage.getItem(STORAGE_KEY);
+                if (!savedState) {
+                    console.log('📭 لا توجد حالة محفوظة');
+                    return false;
+                }
+                
+                const state = JSON.parse(savedState);
+                console.log('📂 تم العثور على حالة محفوظة بتاريخ:', state.lastSaveTime);
+                
+                // استعادة الإعدادات الأساسية
+                if (state.currentSymbol) currentSymbol = state.currentSymbol;
+                if (state.selectedMode) selectedMode = state.selectedMode;
+                if (state.marginPercent) marginPercent = state.marginPercent;
+                if (state.leverage) leverage = state.leverage;
+                if (state.quantityPercent) quantityPercent = state.quantityPercent;
+                if (state.walletBalance) walletBalance = state.walletBalance;
+                if (state.isStrategyActive !== undefined) isStrategyActive = state.isStrategyActive;
+                
+                // استعادة بيانات الشمعة
+                if (state.candleData) candleData = state.candleData;
+                
+                // استعادة الأهداف
+                if (state.selectedLongTarget) selectedLongTarget = state.selectedLongTarget;
+                if (state.selectedShortTarget) selectedShortTarget = state.selectedShortTarget;
+                
+                // استعادة الإحصائيات
+                if (state.tradeCount) tradeCount = state.tradeCount;
+                if (state.todayTrades) todayTrades = state.todayTrades;
+                if (state.todayProfitPercent) todayProfitPercent = state.todayProfitPercent;
+                if (state.todayLossPercent) todayLossPercent = state.todayLossPercent;
+                
+                // تطبيق الإعدادات على الواجهة
+                applyRestoredState();
+                
+                console.log('✅ تم استعادة الحالة بنجاح');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ خطأ في استعادة الحالة:', error);
+                localStorage.removeItem(STORAGE_KEY); // إزالة البيانات التالفة
+                return false;
+            }
+        }
+
+        // === دالة تطبيق الحالة المستعادة على الواجهة ===
+        function applyRestoredState() {
+            // تحديث حقول الإدخال
+            document.getElementById('symbolInput').value = currentSymbol.replace('USDT', '');
+            document.getElementById('leverageSlider').value = leverage;
+            document.getElementById('marginSlider').value = marginPercent;
+            document.getElementById('quantitySlider').value = quantityPercent;
+            
+            // تحديث العروض
+            updateLeverage(leverage);
+            updateMargin(marginPercent);
+            updateQuantity(quantityPercent);
+            updateCalculatedAmount();
+            
+            // تحديث وضع التداول
+            selectMode(selectedMode);
+            
+            // تحديث الإحصائيات
+            document.getElementById('profitPercent').textContent = todayProfitPercent + '%';
+            document.getElementById('lossPercent').textContent = todayLossPercent + '%';
+            
+            // إذا كانت هناك بيانات شمعة محفوظة، عرضها
+            if (candleData) {
+                document.getElementById('longEntry').textContent = '$' + candleData.high.toFixed(4);
+                document.getElementById('shortEntry').textContent = '$' + candleData.low.toFixed(4);
+                document.getElementById('candleData').style.display = 'block';
+                updateTargetPrices();
+                
+                // تحديد الأهداف المختارة
+                document.querySelectorAll('#longTargets .target-row').forEach((row, index) => {
+                    if (index === selectedLongTarget - 1) {
+                        row.classList.add('selected');
+                    } else {
+                        row.classList.remove('selected');
+                    }
+                });
+                
+                document.querySelectorAll('#shortTargets .target-row').forEach((row, index) => {
+                    if (index === selectedShortTarget - 1) {
+                        row.classList.add('selected');
+                    } else {
+                        row.classList.remove('selected');
+                    }
+                });
+                
+                // إذا كانت الاستراتيجية مفعلة، إعادة الاتصال بـ WebSocket
+                if (isStrategyActive && currentSymbol) {
+                    connectWebSocket(currentSymbol);
+                    setTimeout(() => {
+                        alert(`✅ تم استعادة الاستراتيجية الذهبية تلقائياً!\n\n📊 العملة: ${currentSymbol}\n🔔 الحالة: مفعلة وجاهزة\n💰 الرصيد: $${walletBalance.toFixed(2)}\n\nتم استعادة كل الإعدادات كما تركتها آخر مرة.`);
+                    }, 1000);
+                }
+            }
+        }
+
+        // === دالة حفظ الحالة تلقائياً كل 5 ثواني ===
+        function startAutoSave() {
+            // حفظ أولي
+            saveStateToLocalStorage();
+            
+            // حفظ تلقائي كل 5 ثواني
+            setInterval(saveStateToLocalStorage, 5000);
+            
+            // حفظ عند إغلاق الصفحة
+            window.addEventListener('beforeunload', saveStateToLocalStorage);
+            
+            console.log('🚀 تم تفعيل الحفظ التلقائي');
+        }
 
         // دالة إرسال رسالة إلى البوت
         async function sendTelegramMessage(message) {
@@ -896,8 +1050,13 @@
             const dateStr = today.toLocaleDateString('ar-SA', options);
             document.getElementById('todayDate').textContent = dateStr;
             
-            todayProfitPercent = (Math.random() * 15 + 1).toFixed(1);
-            todayLossPercent = (Math.random() * 10 + 1).toFixed(1);
+            // إذا لم تكن هناك قيم محفوظة، إنشاء قيم عشوائية
+            if (!todayProfitPercent) {
+                todayProfitPercent = (Math.random() * 15 + 1).toFixed(1);
+            }
+            if (!todayLossPercent) {
+                todayLossPercent = (Math.random() * 10 + 1).toFixed(1);
+            }
             
             document.getElementById('profitPercent').textContent = todayProfitPercent + '%';
             document.getElementById('lossPercent').textContent = todayLossPercent + '%';
@@ -962,6 +1121,9 @@
                     `;
                     
                     sendTelegramMessage(newDayMessage);
+                    
+                    // حفظ الحالة بعد تحديث البيانات
+                    saveStateToLocalStorage();
                 }
             } catch (error) {
                 console.log('خطأ في تحميل بيانات اليوم الجديد:', error);
@@ -985,7 +1147,7 @@
             enteredPrice = 0;
             stopHit = false;
             hitTargets = {};
-            isTradeOpen = false; // NEW: إعادة تعيين حالة الصفقة المفتوحة
+            isTradeOpen = false;
             
             notificationSent.entryLong = false;
             notificationSent.entryShort = false;
@@ -1009,7 +1171,7 @@
             
             hitTargets = {};
             stopHit = false;
-            isTradeOpen = false; // NEW: تأكيد إعادة التعيين
+            isTradeOpen = false;
             tradeStartTime = null;
             lastEntryTime = 0;
         }
@@ -1035,6 +1197,9 @@
             walletBalance += parseFloat(profitLoss);
             updateCalculatedAmount();
             
+            // حفظ الحالة بعد كل صفقة
+            saveStateToLocalStorage();
+            
             console.log(`📝 تم إضافة صفقة ${tradeCount}:`, trade);
         }
 
@@ -1059,7 +1224,7 @@
                 const now = Date.now();
                 
                 // === مراقبة دخول اللونج ===
-                if (currentPrice > candleData.high && tradeStatus === 'waiting' && !isTradeOpen) { // NEW: Added !isTradeOpen
+                if (currentPrice > candleData.high && tradeStatus === 'waiting' && !isTradeOpen) {
                     // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
@@ -1071,7 +1236,7 @@
                     isLongPosition = true;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
-                    isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
+                    isTradeOpen = true;
                     
                     if (!notificationSent.entryLong) {
                         notificationSent.entryLong = true;
@@ -1097,11 +1262,14 @@
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
                         `;
                         sendTelegramMessage(message);
+                        
+                        // حفظ الحالة بعد الدخول في صفقة
+                        saveStateToLocalStorage();
                     }
                 }
                 
                 // === مراقبة دخول الشورت ===
-                if (currentPrice < candleData.low && tradeStatus === 'waiting' && !isTradeOpen) { // NEW: Added !isTradeOpen
+                if (currentPrice < candleData.low && tradeStatus === 'waiting' && !isTradeOpen) {
                     // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
@@ -1113,7 +1281,7 @@
                     isLongPosition = false;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
-                    isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
+                    isTradeOpen = true;
                     
                     if (!notificationSent.entryShort) {
                         notificationSent.entryShort = true;
@@ -1139,6 +1307,9 @@
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
                         `;
                         sendTelegramMessage(message);
+                        
+                        // حفظ الحالة بعد الدخول في صفقة
+                        saveStateToLocalStorage();
                     }
                 }
                 
@@ -1202,6 +1373,7 @@
                                 setTimeout(() => {
                                     resetTradeState();
                                     console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف أو ضرب الستوب');
+                                    saveStateToLocalStorage(); // حفظ بعد إغلاق الصفقة
                                 }, 1000);
                             }
                             break;
@@ -1269,6 +1441,7 @@
                                 setTimeout(() => {
                                     resetTradeState();
                                     console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف أو ضرب الستوب');
+                                    saveStateToLocalStorage(); // حفظ بعد إغلاق الصفقة
                                 }, 1000);
                             }
                             break;
@@ -1325,7 +1498,10 @@
                             );
                             
                             // إعادة التعيين للصفقة التالية
-                            setTimeout(resetTradeState, 1000);
+                            setTimeout(() => {
+                                resetTradeState();
+                                saveStateToLocalStorage(); // حفظ بعد إغلاق الصفقة
+                            }, 1000);
                         }
                     }
                 }
@@ -1379,7 +1555,10 @@
                             );
                             
                             // إعادة التعيين للصفقة التالية
-                            setTimeout(resetTradeState, 1000);
+                            setTimeout(() => {
+                                resetTradeState();
+                                saveStateToLocalStorage(); // حفظ بعد إغلاق الصفقة
+                            }, 1000);
                         }
                     }
                 }
@@ -1457,6 +1636,9 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             tradeCount = 0;
             
             updateDateAndStats();
+            
+            // حفظ الحالة بعد تقرير نهاية اليوم
+            saveStateToLocalStorage();
         }
 
         function selectMode(mode) {
@@ -1464,24 +1646,36 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             document.getElementById('isolatedMode').classList.remove('selected');
             document.getElementById('crossMode').classList.remove('selected');
             document.getElementById(mode + 'Mode').classList.add('selected');
+            
+            // حفظ تلقائي عند تغيير الإعدادات
+            saveStateToLocalStorage();
         }
 
         function updateLeverage(value) {
             leverage = parseInt(value);
             document.getElementById('leverageValue').textContent = leverage + 'x';
             updateCalculatedAmount();
+            
+            // حفظ تلقائي عند تغيير الإعدادات
+            saveStateToLocalStorage();
         }
 
         function updateMargin(value) {
             marginPercent = parseInt(value);
             document.getElementById('marginValue').textContent = marginPercent + '%';
             updateCalculatedAmount();
+            
+            // حفظ تلقائي عند تغيير الإعدادات
+            saveStateToLocalStorage();
         }
 
         function updateQuantity(value) {
             quantityPercent = parseInt(value);
             document.getElementById('quantityValue').textContent = quantityPercent + '%';
             updateCalculatedAmount();
+            
+            // حفظ تلقائي عند تغيير الإعدادات
+            saveStateToLocalStorage();
         }
 
         function updateCalculatedAmount() {
@@ -1506,6 +1700,9 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                 event.currentTarget.classList.add('selected');
             }
             updateTargetPrices();
+            
+            // حفظ تلقائي عند تغيير الإعدادات
+            saveStateToLocalStorage();
         }
 
         function updateTargetPrices() {
@@ -1589,6 +1786,9 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                 
                 const data = await response.json();
                 processCandleData(data);
+                
+                // حفظ تلقائي بعد تحميل البيانات
+                saveStateToLocalStorage();
 
             } catch (error) {
                 document.getElementById('loadingCandle').style.display = 'none';
@@ -1742,6 +1942,9 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                     `;
                     
                     alert(message);
+                    
+                    // حفظ الحالة بعد تفعيل الاستراتيجية
+                    saveStateToLocalStorage();
                 } else {
                     alert('⚠️ حدث خطأ في إرسال الرسالة للبوت. تأكد من اتصال الإنترنت.');
                 }
@@ -1773,7 +1976,10 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                 todayTrades = [];
                 tradeCount = 0;
                 
-                alert('✅ تم إلغاء الاستراتيجية بنجاح');
+                // مسح الحالة المحفوظة عند الإلغاء الكامل
+                localStorage.removeItem(STORAGE_KEY);
+                
+                alert('✅ تم إلغاء الاستراتيجية بنجاح وتم مسح الحالة المحفوظة');
             }
         }
 
@@ -1784,8 +1990,18 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
         });
 
         window.onload = function() {
+            // محاولة استعادة الحالة أولاً
+            const restored = restoreStateFromLocalStorage();
+            
             updateDateAndStats();
-            loadCryptoData();
+            
+            // إذا لم يتم استعادة الحالة أو لا توجد بيانات شمعة، تحميل البيانات
+            if (!restored || !candleData) {
+                loadCryptoData();
+            }
+            
+            // بدء نظام الحفظ التلقائي
+            startAutoSave();
             
             const now = new Date();
             const endOfDay = new Date();
@@ -1826,6 +2042,7 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📈 النظام يعمل بشكل طبيعي
 🔄 جاهز لصفقات متعددة
+💾 الحالة محفوظة تلقائياً
                     `;
                     
                     try {
@@ -1837,6 +2054,13 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                     }
                 }
             }, 60000); // التحقق كل دقيقة
+            
+            // إظهار رسالة ترحيب
+            if (restored && isStrategyActive) {
+                setTimeout(() => {
+                    console.log('✅ تم استعادة الحالة السابقة تلقائياً');
+                }, 500);
+            }
         };
     </script>
 </body>
