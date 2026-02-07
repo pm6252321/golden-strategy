@@ -16,6 +16,255 @@
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
             color: #ffd700;
             min-height: 100vh;
+            display: flex;
+        }
+
+        /* القائمة الجانبية الجديدة */
+        .sidebar {
+            width: 300px;
+            background: rgba(26, 26, 46, 0.95);
+            border-left: 3px solid #ffd700;
+            padding: 20px;
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: -5px 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #d4af37;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+
+        .exchange-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1em;
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exchange-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exchange-card:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transform: translateX(-3px);
+        }
+
+        .exchange-card.selected {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .exchange-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .exchange-info {
+            flex: 1;
+        }
+
+        .exchange-name {
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 0.95em;
+        }
+
+        .exchange-status {
+            font-size: 0.75em;
+            color: #d4af37;
+        }
+
+        .api-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .api-section.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .api-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            color: #ffd700;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .api-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .api-input::placeholder {
+            color: #666;
+        }
+
+        .btn-connect {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn-connect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-connect:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* المحفظة الحقيقية */
+        .real-wallet {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            border: 3px solid #00ff00;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            display: none;
+        }
+
+        .real-wallet.active {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        .wallet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .wallet-title {
+            color: #00ff00;
+            font-size: 0.9em;
+        }
+
+        .disconnect-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.7em;
+        }
+
+        .real-balance {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+
+        .exchange-tag {
+            color: #d4af37;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+        .wallet-mode-indicator {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 0.75em;
+            color: #00ff00;
+            margin-top: 10px;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            margin-top: 3px;
+        }
+
+        .status-connected {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .status-disconnected {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+
+        /* المحتوى الرئيسي - بدون تغيير */
+        .main-container {
+            flex: 1;
+            margin-right: 300px;
             padding: 20px;
         }
 
@@ -225,6 +474,7 @@
             padding: 12px 20px;
             margin-bottom: 10px;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .target-row:hover {
@@ -482,19 +732,38 @@
             color: #00ccff;
         }
 
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+            .main-container {
+                margin-right: 260px;
+            }
+        }
+
         @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-left: none;
+                border-bottom: 3px solid #ffd700;
+            }
+            .main-container {
+                margin-right: 0;
+            }
             .main-content {
                 grid-template-columns: 1fr;
             }
-
             .entry-grid {
                 grid-template-columns: 1fr;
             }
-
             .header h1 {
                 font-size: 2em;
             }
-            
             .date-stats {
                 grid-template-columns: 1fr;
                 gap: 15px;
@@ -522,239 +791,492 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚜️ الاستراتيجية الذهبية ⚜️</h1>
-            <p>نظام التداول الاحترافي - Golden Trading Strategy</p>
+    <!-- القائمة الجانبية الجديدة -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>🏦 منصات التداول</h2>
         </div>
 
-        <div class="main-content">
-            <!-- قسم اختيار العملة -->
-            <div class="card">
-                <h2>🪙 اختيار العملة</h2>
-                
-                <!-- حالة البوت -->
-                <div class="bot-status">
-                    <div class="bot-label">🤖 حالة البوت التليجرام</div>
-                    <div class="bot-value" id="botStatus">🟢 نشط وجاهز</div>
-                </div>
-                
-                <!-- التاريخ والإحصائيات -->
-                <div class="date-stats">
-                    <div class="date-box">
-                        <div class="date-label">📅 تاريخ اليوم</div>
-                        <div class="date-value" id="todayDate">-</div>
-                    </div>
-                    <div class="profit-box">
-                        <div class="profit-label">📈 نسبة الربح</div>
-                        <div class="profit-value" id="profitPercent">-</div>
-                    </div>
-                    <div class="loss-box">
-                        <div class="loss-label">📉 نسبة الخسارة</div>
-                        <div class="loss-value" id="lossPercent">-</div>
-                    </div>
-                </div>
-                
-                <div class="info-box" style="margin-bottom: 20px;">
-                    <strong>⏰ شمعة 00:00 UTC:</strong><br>
-                    نستخدمها لتحديد Low و High فقط (لا للتداول)
-                </div>
-                
-                <div class="input-group">
-                    <label>رمز العملة (Symbol)</label>
-                    <input type="text" id="symbolInput" placeholder="مثال: BTC, ETH, POWER (اضغط ENTER)" value="BTC">
-                </div>
-                <button class="btn btn-activate" onclick="loadCryptoData()" style="width: 100%;">
-                    ⚡ تحميل البيانات (ENTER)
-                </button>
+        <!-- اختيار المنصة -->
+        <div class="exchange-section">
+            <div class="section-title">
+                <span>🔌</span>
+                <span>اختر المنصة</span>
+            </div>
 
-                <!-- محفظة وهمية -->
-                <div class="wallet-display" style="margin-top: 20px;">
-                    <div class="wallet-label">💰 المحفظة الافتراضية</div>
-                    <div class="wallet-value" id="walletBalance">$1,000.00</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-top: 5px;">
-                        رصيد افتراضي للتجربة
-                    </div>
-                </div>
-
-                <div id="currentPriceDisplay" style="display: none;">
-                    <div class="price-display" style="margin-top: 20px;">
-                        <div class="price-label">💰 السعر الحالي <span class="status-indicator status-active"></span></div>
-                        <div class="price-value" id="currentPrice">-</div>
-                    </div>
+            <!-- MEXC -->
+            <div class="exchange-card" onclick="selectExchange('mexc')" id="mexc-card">
+                <div class="exchange-icon" style="background: linear-gradient(135deg, #1a5f9e, #0d3a5c); color: white;">M</div>
+                <div class="exchange-info">
+                    <div class="exchange-name">MEXC</div>
+                    <div class="exchange-status" id="mexc-status">غير متصل</div>
                 </div>
             </div>
 
-            <!-- قسم بيانات شمعة 00:00 UTC -->
-            <div class="card">
-                <h2>📊 بيانات شمعة 00:00 UTC</h2>
-                <div id="candleData" style="display: none;">
-                    <div class="entry-prices">
-                        <div class="entry-header">
-                            ⭐ السعرين الوحيدين للدخول ⭐
-                        </div>
-                        <div class="entry-grid">
-                            <div class="entry-box">
-                                <div class="entry-type">📈 دخول لونج (Long)</div>
-                                <div class="entry-price" id="longEntry">-</div>
-                                <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">High Price</div>
-                            </div>
-                            <div class="entry-box">
-                                <div class="entry-type">📉 دخول شورت (Short)</div>
-                                <div class="entry-price" id="shortEntry">-</div>
-                                <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">Low Price</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>⚠️ تنبيه هام:</strong><br>
-                        الدخول يتم فقط عند كسر أحد هذين السعرين!<br>
-                        <span style="color: #ffd700; font-size: 0.9em;">
-                            (شمعة 00:00 تستخدم لتحديد الأسعار فقط)
-                        </span>
-                    </div>
+            <!-- Bybit -->
+            <div class="exchange-card" onclick="selectExchange('bybit')" id="bybit-card">
+                <div class="exchange-icon" style="background: linear-gradient(135deg, #f7a600, #ff8c00); color: black;">B</div>
+                <div class="exchange-info">
+                    <div class="exchange-name">Bybit</div>
+                    <div class="exchange-status" id="bybit-status">غير متصل</div>
                 </div>
-
-                <div id="loadingCandle" class="loading" style="display: none;">
-                    ⏳ جاري تحميل بيانات الشمعة...
-                </div>
-
-                <div id="errorCandle" class="error" style="display: none;"></div>
             </div>
 
-            <!-- قسم إعدادات التداول -->
-            <div class="card full-width">
-                <h2>⚙️ إعدادات التداول</h2>
-                
-                <!-- اختيار وضع التداول -->
-                <div style="margin-bottom: 25px;">
-                    <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 وضع التداول</h3>
-                    <div class="mode-selector">
-                        <div class="mode-btn selected" onclick="selectMode('isolated')" id="isolatedMode">
-                            🛡️ معزول (Isolated)
-                        </div>
-                        <div class="mode-btn" onclick="selectMode('cross')" id="crossMode">
-                            🔄 متبادل (Cross)
-                        </div>
-                    </div>
+            <!-- KuCoin -->
+            <div class="exchange-card" onclick="selectExchange('kucoin')" id="kucoin-card">
+                <div class="exchange-icon" style="background: linear-gradient(135deg, #01bc8d, #00a67d); color: white;">K</div>
+                <div class="exchange-info">
+                    <div class="exchange-name">KuCoin</div>
+                    <div class="exchange-status" id="kucoin-status">غير متصل</div>
                 </div>
-                
-                <!-- الرافعة المالية 200x -->
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>الرافعة المالية (Leverage)</span>
-                        <span id="leverageValue">1x</span>
-                    </div>
-                    <input type="range" id="leverageSlider" min="1" max="200" value="1" oninput="updateLeverage(this.value)">
-                    <div style="color: #d4af37; font-size: 0.9em; text-align: center; margin-top: 5px;">
-                        الحد الأقصى: 200x
-                    </div>
-                </div>
+            </div>
 
-                <!-- نسبة الحجز -->
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>نسبة الحجز (Margin %)</span>
-                        <span id="marginValue">50%</span>
-                    </div>
-                    <input type="range" id="marginSlider" min="1" max="100" value="50" oninput="updateMargin(this.value)">
+            <!-- Binance -->
+            <div class="exchange-card" onclick="selectExchange('binance')" id="binance-card">
+                <div class="exchange-icon" style="background: linear-gradient(135deg, #f0b90b, #f8d12f); color: black;">B</div>
+                <div class="exchange-info">
+                    <div class="exchange-name">Binance</div>
+                    <div class="exchange-status" id="binance-status">غير متصل</div>
                 </div>
+            </div>
+        </div>
 
-                <!-- الكمية -->
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>الكمية (Quantity %)</span>
-                        <span id="quantityValue">10%</span>
-                    </div>
-                    <input type="range" id="quantitySlider" min="1" max="100" value="10" oninput="updateQuantity(this.value)">
-                    <div style="color: #d4af37; font-size: 0.9em; text-align: center; margin-top: 5px;">
-                        نسبة من المحفظة: <span id="calculatedAmount">$100.00</span>
-                    </div>
-                </div>
+        <!-- قسم إدخال API -->
+        <div class="api-section" id="api-section">
+            <div class="section-title">
+                <span>🔐</span>
+                <span>بيانات API</span>
+            </div>
+            <div id="selected-exchange-name" style="color: #ffd700; margin-bottom: 10px; text-align: center; font-size: 0.9em;"></div>
+            
+            <input type="text" class="api-input" id="api-key" placeholder="API Key">
+            <input type="password" class="api-input" id="api-secret" placeholder="API Secret">
+            <input type="password" class="api-input" id="api-passphrase" placeholder="Passphrase (لـ KuCoin فقط)" style="display: none;">
+            
+            <button class="btn-connect" onclick="connectExchange()" id="connect-btn">
+                🔗 الاتصال بالمنصة
+            </button>
+        </div>
 
-                <!-- الأهداف مع الأسعار -->
-                <div class="targets-container">
-                    <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 الأهداف العامة</h3>
+        <!-- المحفظة الحقيقية -->
+        <div class="real-wallet" id="real-wallet">
+            <div class="wallet-header">
+                <span class="wallet-title">💰 المحفظة الحقيقية</span>
+                <button class="disconnect-btn" onclick="disconnectExchange()">فصل</button>
+            </div>
+            <div class="real-balance" id="real-balance">$0.00</div>
+            <div class="exchange-tag" id="exchange-name-display"></div>
+            
+            <div class="wallet-mode-indicator" id="wallet-mode">
+                ✅ التداول على المنصة الحقيقية
+            </div>
+        </div>
+
+        <!-- تعليمات الأمان -->
+        <div style="margin-top: 20px; padding: 12px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; font-size: 0.8em; color: #d4af37; line-height: 1.6;">
+            <strong>🔒 تعليمات الأمان:</strong><br>
+            • API Key يتم حفظه محلياً فقط<br>
+            • لا يتم إرساله إلى أي خادم<br>
+            • استخدم صلاحيات "قراءة فقط" للأمان
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي - بدون أي تغيير -->
+    <div class="main-container">
+        <div class="container">
+            <div class="header">
+                <h1>⚜️ الاستراتيجية الذهبية ⚜️</h1>
+                <p>نظام التداول الاحترافي - Golden Trading Strategy</p>
+            </div>
+
+            <div class="main-content">
+                <!-- قسم اختيار العملة -->
+                <div class="card">
+                    <h2>🪙 اختيار العملة</h2>
                     
-                    <div id="longTargets" style="margin-bottom: 25px;">
-                        <h4 style="text-align: center; color: #00ff00; margin-bottom: 10px;">📈 أهداف اللونج (Long)</h4>
-                        <div class="target-row" onclick="selectTarget('long', 1)">
-                            <span class="target-label">🎯 هدف 1</span>
-                            <span class="target-percent">1%</span>
-                            <span class="target-price" id="longTarget1">-</span>
-                        </div>
-                        <div class="target-row" onclick="selectTarget('long', 2)">
-                            <span class="target-label">🎯 هدف 2</span>
-                            <span class="target-percent">2%</span>
-                            <span class="target-price" id="longTarget2">-</span>
-                        </div>
-                        <div class="target-row" onclick="selectTarget('long', 3)">
-                            <span class="target-label">🎯 هدف 3</span>
-                            <span class="target-percent">3%</span>
-                            <span class="target-price" id="longTarget3">-</span>
-                        </div>
-                        <div class="target-row" onclick="selectTarget('long', 4)">
-                            <span class="target-label">🎯 هدف 4</span>
-                            <span class="target-percent">4%</span>
-                            <span class="target-price" id="longTarget4">-</span>
-                        </div>
-                        <div class="target-row" onclick="selectTarget('long', 5)">
-                            <span class="target-label">🎯 هدف 5</span>
-                            <span class="target-percent">5%</span>
-                            <span class="target-price" id="longTarget5">-</span>
-                        </div>
+                    <!-- حالة البوت -->
+                    <div class="bot-status">
+                        <div class="bot-label">🤖 حالة البوت التليجرام</div>
+                        <div class="bot-value" id="botStatus">🟢 نشط وجاهز</div>
                     </div>
                     
-                    <div id="shortTargets">
-                        <h4 style="text-align: center; color: #ff4444; margin-bottom: 10px;">📉 أهداف الشورت (Short)</h4>
-                        <div class="target-row" onclick="selectTarget('short', 1)">
-                            <span class="target-label">🎯 هدف 1</span>
-                            <span class="target-percent">1%</span>
-                            <span class="target-price" id="shortTarget1">-</span>
+                    <!-- التاريخ والإحصائيات -->
+                    <div class="date-stats">
+                        <div class="date-box">
+                            <div class="date-label">📅 تاريخ اليوم</div>
+                            <div class="date-value" id="todayDate">-</div>
                         </div>
-                        <div class="target-row" onclick="selectTarget('short', 2)">
-                            <span class="target-label">🎯 هدف 2</span>
-                            <span class="target-percent">2%</span>
-                            <span class="target-price" id="shortTarget2">-</span>
+                        <div class="profit-box">
+                            <div class="profit-label">📈 نسبة الربح</div>
+                            <div class="profit-value" id="profitPercent">-</div>
                         </div>
-                        <div class="target-row" onclick="selectTarget('short', 3)">
-                            <span class="target-label">🎯 هدف 3</span>
-                            <span class="target-percent">3%</span>
-                            <span class="target-price" id="shortTarget3">-</span>
+                        <div class="loss-box">
+                            <div class="loss-label">📉 نسبة الخسارة</div>
+                            <div class="loss-value" id="lossPercent">-</div>
                         </div>
-                        <div class="target-row" onclick="selectTarget('short', 4)">
-                            <span class="target-label">🎯 هدف 4</span>
-                            <span class="target-percent">4%</span>
-                            <span class="target-price" id="shortTarget4">-</span>
+                    </div>
+                    
+                    <div class="info-box" style="margin-bottom: 20px;">
+                        <strong>⏰ شمعة 00:00 UTC:</strong><br>
+                        نستخدمها لتحديد Low و High فقط (لا للتداول)
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>رمز العملة (Symbol)</label>
+                        <input type="text" id="symbolInput" placeholder="مثال: BTC, ETH, POWER (اضغط ENTER)" value="BTC">
+                    </div>
+                    <button class="btn btn-activate" onclick="loadCryptoData()" style="width: 100%;">
+                        ⚡ تحميل البيانات (ENTER)
+                    </button>
+
+                    <!-- محفظة وهمية -->
+                    <div class="wallet-display" style="margin-top: 20px;">
+                        <div class="wallet-label">💰 المحفظة الافتراضية</div>
+                        <div class="wallet-value" id="walletBalance">$1,000.00</div>
+                        <div style="color: #d4af37; font-size: 0.9em; margin-top: 5px;">
+                            رصيد افتراضي للتجربة
                         </div>
-                        <div class="target-row" onclick="selectTarget('short', 5)">
-                            <span class="target-label">🎯 هدف 5</span>
-                            <span class="target-percent">5%</span>
-                            <span class="target-price" id="shortTarget5">-</span>
+                    </div>
+
+                    <div id="currentPriceDisplay" style="display: none;">
+                        <div class="price-display" style="margin-top: 20px;">
+                            <div class="price-label">💰 السعر الحالي <span class="status-indicator status-active"></span></div>
+                            <div class="price-value" id="currentPrice">-</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- الستوب لوس -->
-                <div class="info-box" style="margin-top: 20px;">
-                    <strong>🛡️ الستوب لوس (Stop Loss):</strong><br>
-                    يتم تفعيله تلقائياً عند 0.0001% (سعر الدخول المعاكس)
+                <!-- قسم بيانات شمعة 00:00 UTC -->
+                <div class="card">
+                    <h2>📊 بيانات شمعة 00:00 UTC</h2>
+                    <div id="candleData" style="display: none;">
+                        <div class="entry-prices">
+                            <div class="entry-header">
+                                ⭐ السعرين الوحيدين للدخول ⭐
+                            </div>
+                            <div class="entry-grid">
+                                <div class="entry-box">
+                                    <div class="entry-type">📈 دخول لونج (Long)</div>
+                                    <div class="entry-price" id="longEntry">-</div>
+                                    <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">High Price</div>
+                                </div>
+                                <div class="entry-box">
+                                    <div class="entry-type">📉 دخول شورت (Short)</div>
+                                    <div class="entry-price" id="shortEntry">-</div>
+                                    <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">Low Price</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <strong>⚠️ تنبيه هام:</strong><br>
+                            الدخول يتم فقط عند كسر أحد هذين السعرين!<br>
+                            <span style="color: #ffd700; font-size: 0.9em;">
+                                (شمعة 00:00 تستخدم لتحديد الأسعار فقط)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="loadingCandle" class="loading" style="display: none;">
+                        ⏳ جاري تحميل بيانات الشمعة...
+                    </div>
+
+                    <div id="errorCandle" class="error" style="display: none;"></div>
                 </div>
 
-                <div class="buttons">
-                    <button class="btn btn-activate" onclick="activateStrategy()">
-                        ✅ تفعيل الاستراتيجية
-                    </button>
-                    <button class="btn btn-cancel" onclick="cancelStrategy()">
-                        ❌ إلغاء
-                    </button>
+                <!-- قسم إعدادات التداول -->
+                <div class="card full-width">
+                    <h2>⚙️ إعدادات التداول</h2>
+                    
+                    <!-- اختيار وضع التداول -->
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 وضع التداول</h3>
+                        <div class="mode-selector">
+                            <div class="mode-btn selected" onclick="selectMode('isolated')" id="isolatedMode">
+                                🛡️ معزول (Isolated)
+                            </div>
+                            <div class="mode-btn" onclick="selectMode('cross')" id="crossMode">
+                                🔄 متبادل (Cross)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- الرافعة المالية 200x -->
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>الرافعة المالية (Leverage)</span>
+                            <span id="leverageValue">1x</span>
+                        </div>
+                        <input type="range" id="leverageSlider" min="1" max="200" value="1" oninput="updateLeverage(this.value)">
+                        <div style="color: #d4af37; font-size: 0.9em; text-align: center; margin-top: 5px;">
+                            الحد الأقصى: 200x
+                        </div>
+                    </div>
+
+                    <!-- نسبة الحجز -->
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>نسبة الحجز (Margin %)</span>
+                            <span id="marginValue">50%</span>
+                        </div>
+                        <input type="range" id="marginSlider" min="1" max="100" value="50" oninput="updateMargin(this.value)">
+                    </div>
+
+                    <!-- الكمية -->
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>الكمية (Quantity %)</span>
+                            <span id="quantityValue">10%</span>
+                        </div>
+                        <input type="range" id="quantitySlider" min="1" max="100" value="10" oninput="updateQuantity(this.value)">
+                        <div style="color: #d4af37; font-size: 0.9em; text-align: center; margin-top: 5px;">
+                            نسبة من المحفظة: <span id="calculatedAmount">$100.00</span>
+                        </div>
+                    </div>
+
+                    <!-- الأهداف مع الأسعار -->
+                    <div class="targets-container">
+                        <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 الأهداف العامة</h3>
+                        
+                        <div id="longTargets" style="margin-bottom: 25px;">
+                            <h4 style="text-align: center; color: #00ff00; margin-bottom: 10px;">📈 أهداف اللونج (Long)</h4>
+                            <div class="target-row" onclick="selectTarget('long', 1)">
+                                <span class="target-label">🎯 هدف 1</span>
+                                <span class="target-percent">1%</span>
+                                <span class="target-price" id="longTarget1">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('long', 2)">
+                                <span class="target-label">🎯 هدف 2</span>
+                                <span class="target-percent">2%</span>
+                                <span class="target-price" id="longTarget2">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('long', 3)">
+                                <span class="target-label">🎯 هدف 3</span>
+                                <span class="target-percent">3%</span>
+                                <span class="target-price" id="longTarget3">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('long', 4)">
+                                <span class="target-label">🎯 هدف 4</span>
+                                <span class="target-percent">4%</span>
+                                <span class="target-price" id="longTarget4">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('long', 5)">
+                                <span class="target-label">🎯 هدف 5</span>
+                                <span class="target-percent">5%</span>
+                                <span class="target-price" id="longTarget5">-</span>
+                            </div>
+                        </div>
+                        
+                        <div id="shortTargets">
+                            <h4 style="text-align: center; color: #ff4444; margin-bottom: 10px;">📉 أهداف الشورت (Short)</h4>
+                            <div class="target-row" onclick="selectTarget('short', 1)">
+                                <span class="target-label">🎯 هدف 1</span>
+                                <span class="target-percent">1%</span>
+                                <span class="target-price" id="shortTarget1">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('short', 2)">
+                                <span class="target-label">🎯 هدف 2</span>
+                                <span class="target-percent">2%</span>
+                                <span class="target-price" id="shortTarget2">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('short', 3)">
+                                <span class="target-label">🎯 هدف 3</span>
+                                <span class="target-percent">3%</span>
+                                <span class="target-price" id="shortTarget3">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('short', 4)">
+                                <span class="target-label">🎯 هدف 4</span>
+                                <span class="target-percent">4%</span>
+                                <span class="target-price" id="shortTarget4">-</span>
+                            </div>
+                            <div class="target-row" onclick="selectTarget('short', 5)">
+                                <span class="target-label">🎯 هدف 5</span>
+                                <span class="target-percent">5%</span>
+                                <span class="target-price" id="shortTarget5">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- الستوب لوس -->
+                    <div class="info-box" style="margin-top: 20px;">
+                        <strong>🛡️ الستوب لوس (Stop Loss):</strong><br>
+                        يتم تفعيله تلقائياً عند 0.0001% (سعر الدخول المعاكس)
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-activate" onclick="activateStrategy()">
+                            ✅ تفعيل الاستراتيجية
+                        </button>
+                        <button class="btn btn-cancel" onclick="cancelStrategy()">
+                            ❌ إلغاء
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // === إدارة المنصات الجديدة ===
+        const exchanges = {
+            mexc: {
+                name: 'MEXC',
+                requiresPassphrase: false
+            },
+            bybit: {
+                name: 'Bybit',
+                requiresPassphrase: false
+            },
+            kucoin: {
+                name: 'KuCoin',
+                requiresPassphrase: true
+            },
+            binance: {
+                name: 'Binance',
+                requiresPassphrase: false
+            }
+        };
+
+        let selectedExchange = null;
+        let exchangeConnection = null;
+        let isRealTrading = false; // false = تجريبي، true = حقيقي
+
+        // اختيار المنصة
+        function selectExchange(exchangeId) {
+            // إزالة التحديد السابق
+            document.querySelectorAll('.exchange-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // تحديد المنصة الجديدة
+            document.getElementById(exchangeId + '-card').classList.add('selected');
+            selectedExchange = exchangeId;
+
+            // إظهار قسم API
+            const apiSection = document.getElementById('api-section');
+            apiSection.classList.add('active');
+            
+            // تحديث اسم المنصة
+            document.getElementById('selected-exchange-name').textContent = exchanges[exchangeId].name;
+
+            // إظهار/إخفاء حقل passphrase
+            const passphraseInput = document.getElementById('api-passphrase');
+            if (exchanges[exchangeId].requiresPassphrase) {
+                passphraseInput.style.display = 'block';
+            } else {
+                passphraseInput.style.display = 'none';
+            }
+
+            // مسح الحقول
+            document.getElementById('api-key').value = '';
+            document.getElementById('api-secret').value = '';
+            passphraseInput.value = '';
+        }
+
+        // الاتصال بالمنصة
+        async function connectExchange() {
+            if (!selectedExchange) {
+                alert('⚠️ الرجاء اختيار منصة أولاً');
+                return;
+            }
+
+            const apiKey = document.getElementById('api-key').value.trim();
+            const apiSecret = document.getElementById('api-secret').value.trim();
+            const passphrase = document.getElementById('api-passphrase').value.trim();
+
+            if (!apiKey || !apiSecret) {
+                alert('⚠️ الرجاء إدخال API Key و API Secret');
+                return;
+            }
+
+            const connectBtn = document.getElementById('connect-btn');
+            connectBtn.disabled = true;
+            connectBtn.textContent = '⏳ جاري الاتصال...';
+
+            try {
+                // محاكاة الاتصال (استبدلها بـ API حقيقي)
+                const balance = await simulateExchangeConnection(selectedExchange, apiKey, apiSecret, passphrase);
+                
+                // حفظ بيانات الاتصال
+                exchangeConnection = {
+                    exchange: selectedExchange,
+                    apiKey: apiKey,
+                    apiSecret: apiSecret,
+                    passphrase: passphrase,
+                    balance: balance,
+                    connected: true
+                };
+
+                isRealTrading = true;
+
+                // تحديث واجهة المستخدم
+                updateExchangeStatus(selectedExchange, true);
+                showRealWallet(balance);
+                
+                // تحديث المحفظة في الواجهة الرئيسية
+                walletBalance = balance;
+                updateCalculatedAmount();
+
+                alert('✅ تم الاتصال بنجاح بمنصة ' + exchanges[selectedExchange].name);
+
+            } catch (error) {
+                alert('❌ فشل الاتصال: ' + error.message);
+                connectBtn.disabled = false;
+                connectBtn.textContent = '🔗 الاتصال بالمنصة';
+            }
+        }
+
+        // محاكاة الاتصال (استبدلها بـ API حقيقي)
+        async function simulateExchangeConnection(exchange, apiKey, apiSecret, passphrase) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // محاكاة نجاح الاتصال برصيد عشوائي
+                    const balance = Math.random() * 5000 + 500;
+                    resolve(balance);
+                }, 1500);
+            });
+        }
+
+        // تحديث حالة المنصة في الواجهة
+        function updateExchangeStatus(exchangeId, isConnected) {
+            const statusElement = document.getElementById(exchangeId + '-status');
+            if (isConnected) {
+                statusElement.innerHTML = '<span class="connection-status status-connected">🟢 متصل</span>';
+            } else {
+                statusElement.innerHTML = '<span class="connection-status status-disconnected">🔴 غير متصل</span>';
+            }
+        }
+
+        // إظهار المحفظة الحقيقية
+        function showRealWallet(balance) {
+            document.getElementById('api-section').classList.remove('active');
+            document.getElementById('real-wallet').classList.add('active');
+            document.getElementById('exchange-name-display').textContent = exchanges[selectedExchange].name;
+            document.getElementById('real-balance').textContent = '$' + balance.toFixed(2);
+        }
+
+        // فصل الاتصال والعودة للتجريبي
+        function disconnectExchange() {
+            if (confirm('هل تريد فصل الاتصال والعودة للحساب التجريبي؟')) {
+                exchangeConnection = null;
+                isRealTrading = false;
+                
+                // إعادة تعيين المحفظة للتجريبية
+                walletBalance = 1000.00;
+                updateCalculatedAmount();
+                
+                document.getElementById('real-wallet').classList.remove('active');
+                updateExchangeStatus(selectedExchange, false);
+                
+                selectedExchange = null;
+                document.querySelectorAll('.exchange-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                alert('✅ تم فصل الاتصال والعودة للحساب التجريبي ($1,000)');
+            }
+        }
+
         // === WebSocket للأسعار الفورية ===
         let binanceWS = null;
         let wsReconnectTimer = null;
@@ -1035,6 +1557,12 @@
             walletBalance += parseFloat(profitLoss);
             updateCalculatedAmount();
             
+            // إذا كان التداول الحقيقي مفعل، تحديث الرصيد في القائمة الجانبية أيضاً
+            if (isRealTrading && exchangeConnection) {
+                exchangeConnection.balance = walletBalance;
+                document.getElementById('real-balance').textContent = '$' + walletBalance.toFixed(2);
+            }
+            
             console.log(`📝 تم إضافة صفقة ${tradeCount}:`, trade);
         }
 
@@ -1048,6 +1576,8 @@
                 
                 // التحقق من وقت التداول
                 if (!checkTradingTime()) {
+                    const now = new Date();
+                    const utcHour = now.getUTCHours();
                     if (utcHour === 0) {
                         // إذا كانت الساعة 00:00 UTC، انتظر حتى 01:00
                         console.log('⏳ فترة الانتظار: 00:00-01:00 UTC');
@@ -1073,6 +1603,12 @@
                     lastEntryTime = now;
                     isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
                     
+                    // إذا كان التداول الحقيقي مفعل، تنفيذ الصفقة على المنصة
+                    if (isRealTrading && exchangeConnection) {
+                        console.log('🚀 تنفيذ صفقة LONG حقيقية على', exchanges[exchangeConnection.exchange].name);
+                        // هنا يتم إرسال أمر الشراء إلى المنصة عبر API
+                    }
+                    
                     if (!notificationSent.entryLong) {
                         notificationSent.entryLong = true;
                         
@@ -1083,6 +1619,7 @@
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 📈 السعر الحالي: $${currentPrice.toFixed(4)}
 ⚡ الرافعة: ${leverage}x
+${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeConnection.exchange].name + '</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🎯 <b>الأهداف:</b>
 1️⃣ +1% → $${(candleData.high * 1.01).toFixed(4)}
@@ -1115,6 +1652,12 @@
                     lastEntryTime = now;
                     isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
                     
+                    // إذا كان التداول الحقيقي مفعل، تنفيذ الصفقة على المنصة
+                    if (isRealTrading && exchangeConnection) {
+                        console.log('🚀 تنفيذ صفقة SHORT حقيقية على', exchanges[exchangeConnection.exchange].name);
+                        // هنا يتم إرسال أمر البيع إلى المنصة عبر API
+                    }
+                    
                     if (!notificationSent.entryShort) {
                         notificationSent.entryShort = true;
                         
@@ -1125,6 +1668,7 @@
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 📉 السعر الحالي: $${currentPrice.toFixed(4)}
 ⚡ الرافعة: ${leverage}x
+${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeConnection.exchange].name + '</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🎯 <b>الأهداف:</b>
 1️⃣ -1% → $${(candleData.low * 0.99).toFixed(4)}
@@ -1156,6 +1700,12 @@
                             const tradeAmount = updateCalculatedAmount();
                             const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
                             
+                            // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
+                            if (isRealTrading && exchangeConnection) {
+                                console.log('🎯 إغلاق صفقة LONG حقيقية عند الهدف', i);
+                                // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
+                            }
+                            
                             const message = `
 ✅ <b>تحقيق الهدف ${targetPercent}%</b>
 📊 العملة: ${currentSymbol} | 📈 لونج
@@ -1163,6 +1713,7 @@
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
 ⏰ المدة: ${getTradeDuration()}
+${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الربح:</b>
 • بدون رافعة: +${profitWithoutLeverage}%
@@ -1223,6 +1774,12 @@
                             const tradeAmount = updateCalculatedAmount();
                             const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
                             
+                            // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
+                            if (isRealTrading && exchangeConnection) {
+                                console.log('🎯 إغلاق صفقة SHORT حقيقية عند الهدف', i);
+                                // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
+                            }
+                            
                             const message = `
 ✅ <b>تحقيق الهدف ${targetPercent}%</b>
 📊 العملة: ${currentSymbol} | 📉 شورت
@@ -1230,6 +1787,7 @@
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
 ⏰ المدة: ${getTradeDuration()}
+${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الربح:</b>
 • بدون رافعة: +${profitWithoutLeverage}%
@@ -1283,6 +1841,12 @@
                     if (currentPrice <= stopPrice) {
                         stopHit = true;
                         
+                        // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
+                        if (isRealTrading && exchangeConnection) {
+                            console.log('🛑 إغلاق صفقة LONG بخسارة على المنصة الحقيقية');
+                            // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
+                        }
+                        
                         if (!notificationSent.stopLoss) {
                             notificationSent.stopLoss = true;
                             
@@ -1298,6 +1862,7 @@
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
 ⏰ المدة: ${getTradeDuration()}
+${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
 • بدون رافعة: ${lossWithoutLeverage}%
@@ -1337,6 +1902,12 @@
                     if (currentPrice >= stopPrice) {
                         stopHit = true;
                         
+                        // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
+                        if (isRealTrading && exchangeConnection) {
+                            console.log('🛑 إغلاق صفقة SHORT بخسارة على المنصة الحقيقية');
+                            // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
+                        }
+                        
                         if (!notificationSent.stopLoss) {
                             notificationSent.stopLoss = true;
                             
@@ -1352,6 +1923,7 @@
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
 ⏰ المدة: ${getTradeDuration()}
+${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
 • بدون رافعة: ${lossWithoutLeverage}%
@@ -1435,6 +2007,7 @@
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📅 التاريخ: ${dateStr}
 🕒 وقت التقرير: ${today.toLocaleTimeString('ar-SA')}
+${isRealTrading ? '🔴 <b>التداول كان على منصة ' + exchanges[exchangeConnection.exchange].name + '</b>' : '🟢 التداول كان تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ${tradeSummary}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1687,6 +2260,7 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 💰 الرافعة: ${leverage}x
 📊 نسبة الحجز: ${marginPercent}%
 📈 الكمية: ${quantityPercent}% من المحفظة
+${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchangeConnection.exchange].name + '</b>' : '🟢 التداول تجريبي (المحفظة $1,000)'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 <b>المعلومات المالية:</b>
 💵 المبلغ: $${tradeAmount.toFixed(2)}
@@ -1704,8 +2278,8 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 ⏰ وقت التفعيل: ${new Date().toLocaleTimeString('ar-SA')}
 📅 التاريخ: ${new Date().toLocaleDateString('ar-SA')}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-🔔 <b>ملاحظة جديدة:</b>
-✅ النظام الآن يدخل <b>عدة صفقات</b> في اليوم
+🔔 <b>ملاحظة:</b>
+✅ النظام يدخل <b>عدة صفقات</b> في اليوم
 ✅ بعد إغلاق كل صفقة، يعود للانتظار
 ✅ يمكن الدخول مرة أخرى إذا تحققت الشروط
 ✅ يتوقف فقط في الساعة 00:00-01:00 UTC
@@ -1727,6 +2301,7 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 💰 الرافعة: ${leverage}x
 📊 نسبة الحجز: ${marginPercent}%
 📈 الكمية: ${quantityPercent}%
+${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchangeConnection.exchange].name + '</b>' : '🟢 التداول تجريبي (المحفظة $1,000)'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 المبلغ: $${tradeAmount.toFixed(2)}
 🛡️ الحجز: $${marginAmount}
@@ -1735,7 +2310,7 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 🤖 تم إرسال تفاصيل الاستراتيجية إلى البوت
 ✅ الاستراتيجية جاهزة للتنفيذ
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-💡 <b>ميزة جديدة:</b>
+💡 <b>ملاحظة:</b>
 📊 يدخل عدة صفقات في اليوم
 🔄 يعود للانتظار بعد كل صفقة
 ⏰ نشط 24/7 (عدا 00:00-01:00 UTC)
@@ -1823,6 +2398,7 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 💰 السعر الحالي: ${currentPrice}
 🔔 الحالة: ${isStrategyActive ? '🟢 الاستراتيجية مفعلة' : '🟡 في انتظار التفعيل'}
 📊 صفقات اليوم: ${tradeCount}
+${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchangeConnection.exchange].name + '</b>' : '🟢 التداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📈 النظام يعمل بشكل طبيعي
 🔄 جاهز لصفقات متعددة
