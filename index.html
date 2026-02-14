@@ -791,20 +791,17 @@
     </style>
 </head>
 <body>
-    <!-- القائمة الجانبية الجديدة -->
     <div class="sidebar">
         <div class="sidebar-header">
             <h2>🏦 منصات التداول</h2>
         </div>
 
-        <!-- اختيار المنصة -->
         <div class="exchange-section">
             <div class="section-title">
                 <span>🔌</span>
                 <span>اختر المنصة</span>
             </div>
 
-            <!-- MEXC -->
             <div class="exchange-card" onclick="selectExchange('mexc')" id="mexc-card">
                 <div class="exchange-icon" style="background: linear-gradient(135deg, #1a5f9e, #0d3a5c); color: white;">M</div>
                 <div class="exchange-info">
@@ -813,7 +810,6 @@
                 </div>
             </div>
 
-            <!-- Bybit -->
             <div class="exchange-card" onclick="selectExchange('bybit')" id="bybit-card">
                 <div class="exchange-icon" style="background: linear-gradient(135deg, #f7a600, #ff8c00); color: black;">B</div>
                 <div class="exchange-info">
@@ -822,7 +818,6 @@
                 </div>
             </div>
 
-            <!-- KuCoin -->
             <div class="exchange-card" onclick="selectExchange('kucoin')" id="kucoin-card">
                 <div class="exchange-icon" style="background: linear-gradient(135deg, #01bc8d, #00a67d); color: white;">K</div>
                 <div class="exchange-info">
@@ -831,7 +826,6 @@
                 </div>
             </div>
 
-            <!-- Binance -->
             <div class="exchange-card" onclick="selectExchange('binance')" id="binance-card">
                 <div class="exchange-icon" style="background: linear-gradient(135deg, #f0b90b, #f8d12f); color: black;">B</div>
                 <div class="exchange-info">
@@ -841,7 +835,6 @@
             </div>
         </div>
 
-        <!-- قسم إدخال API -->
         <div class="api-section" id="api-section">
             <div class="section-title">
                 <span>🔐</span>
@@ -858,7 +851,6 @@
             </button>
         </div>
 
-        <!-- المحفظة الحقيقية -->
         <div class="real-wallet" id="real-wallet">
             <div class="wallet-header">
                 <span class="wallet-title">💰 المحفظة الحقيقية</span>
@@ -872,7 +864,6 @@
             </div>
         </div>
 
-        <!-- تعليمات الأمان -->
         <div style="margin-top: 20px; padding: 12px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; font-size: 0.8em; color: #d4af37; line-height: 1.6;">
             <strong>🔒 تعليمات الأمان:</strong><br>
             • API Key يتم حفظه محلياً فقط<br>
@@ -881,7 +872,6 @@
         </div>
     </div>
 
-    <!-- المحتوى الرئيسي - بدون أي تغيير -->
     <div class="main-container">
         <div class="container">
             <div class="header">
@@ -890,17 +880,14 @@
             </div>
 
             <div class="main-content">
-                <!-- قسم اختيار العملة -->
                 <div class="card">
                     <h2>🪙 اختيار العملة</h2>
                     
-                    <!-- حالة البوت -->
                     <div class="bot-status">
                         <div class="bot-label">🤖 حالة البوت التليجرام</div>
                         <div class="bot-value" id="botStatus">🟢 نشط وجاهز</div>
                     </div>
                     
-                    <!-- التاريخ والإحصائيات -->
                     <div class="date-stats">
                         <div class="date-box">
                             <div class="date-label">📅 تاريخ اليوم</div>
@@ -929,7 +916,6 @@
                         ⚡ تحميل البيانات (ENTER)
                     </button>
 
-                    <!-- محفظة وهمية -->
                     <div class="wallet-display" style="margin-top: 20px;">
                         <div class="wallet-label">💰 المحفظة الافتراضية</div>
                         <div class="wallet-value" id="walletBalance">$1,000.00</div>
@@ -946,7 +932,6 @@
                     </div>
                 </div>
 
-                <!-- قسم بيانات شمعة 00:00 UTC -->
                 <div class="card">
                     <h2>📊 بيانات شمعة 00:00 UTC</h2>
                     <div id="candleData" style="display: none;">
@@ -984,11 +969,9 @@
                     <div id="errorCandle" class="error" style="display: none;"></div>
                 </div>
 
-                <!-- قسم إعدادات التداول -->
                 <div class="card full-width">
                     <h2>⚙️ إعدادات التداول</h2>
                     
-                    <!-- اختيار وضع التداول -->
                     <div style="margin-bottom: 25px;">
                         <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 وضع التداول</h3>
                         <div class="mode-selector">
@@ -1001,7 +984,6 @@
                         </div>
                     </div>
                     
-                    <!-- الرافعة المالية 200x -->
                     <div class="slider-container">
                         <div class="slider-label">
                             <span>الرافعة المالية (Leverage)</span>
@@ -1013,7 +995,6 @@
                         </div>
                     </div>
 
-                    <!-- نسبة الحجز -->
                     <div class="slider-container">
                         <div class="slider-label">
                             <span>نسبة الحجز (Margin %)</span>
@@ -1022,7 +1003,6 @@
                         <input type="range" id="marginSlider" min="1" max="100" value="50" oninput="updateMargin(this.value)">
                     </div>
 
-                    <!-- الكمية -->
                     <div class="slider-container">
                         <div class="slider-label">
                             <span>الكمية (Quantity %)</span>
@@ -1034,7 +1014,6 @@
                         </div>
                     </div>
 
-                    <!-- الأهداف مع الأسعار -->
                     <div class="targets-container">
                         <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">🎯 الأهداف العامة</h3>
                         
@@ -1097,7 +1076,6 @@
                         </div>
                     </div>
 
-                    <!-- الستوب لوس -->
                     <div class="info-box" style="margin-top: 20px;">
                         <strong>🛡️ الستوب لوس (Stop Loss):</strong><br>
                         يتم تفعيله تلقائياً عند 0.0001% (سعر الدخول المعاكس)
@@ -1117,63 +1095,76 @@
     </div>
 
     <script>
-        // === إدارة المنصات الجديدة ===
         const exchanges = {
-            mexc: {
-                name: 'MEXC',
-                requiresPassphrase: false
-            },
-            bybit: {
-                name: 'Bybit',
-                requiresPassphrase: false
-            },
-            kucoin: {
-                name: 'KuCoin',
-                requiresPassphrase: true
-            },
-            binance: {
-                name: 'Binance',
-                requiresPassphrase: false
-            }
+            mexc: { name: 'MEXC', requiresPassphrase: false },
+            bybit: { name: 'Bybit', requiresPassphrase: false },
+            kucoin: { name: 'KuCoin', requiresPassphrase: true },
+            binance: { name: 'Binance', requiresPassphrase: false }
         };
 
         let selectedExchange = null;
         let exchangeConnection = null;
-        let isRealTrading = false; // false = تجريبي، true = حقيقي
+        let isRealTrading = false;
+        let binanceWS = null;
+        let wsReconnectTimer = null;
+        const BOT_TOKEN = '8575662863:AAFvaDlDKRNX9c6kSB6iHST30TIZf1nqzMo';
+        const CHAT_ID = '5155984592';
+        
+        let currentSymbol = 'BTCUSDT';
+        let candleData = null;
+        let selectedMode = 'isolated';
+        let selectedLongTarget = 1;
+        let selectedShortTarget = 1;
+        let marginPercent = 50;
+        let leverage = 1;
+        let quantityPercent = 10;
+        let walletBalance = 1000.00;
+        let todayProfitPercent = 0;
+        let todayLossPercent = 0;
+        
+        let isStrategyActive = false;
+        let tradeStatus = 'waiting';
+        let enteredPrice = 0;
+        let isLongPosition = false;
+        let hitTargets = {};
+        let stopHit = false;
+        let notificationSent = {
+            strategyActivated: false,
+            entryLong: false,
+            entryShort: false,
+            stopLoss: false,
+            targetAchieved: false
+        };
+        let tradeStartTime = null;
+        let tradeCount = 0;
+        let todayTrades = [];
+        let lastEntryTime = 0;
+        let entryCooldown = 5000;
+        let isTradeOpen = false;
+        let avoidTradingPeriod = false;
+        let lastCandleUpdate = null;
+        let currentDay = null;
 
-        // اختيار المنصة
         function selectExchange(exchangeId) {
-            // إزالة التحديد السابق
             document.querySelectorAll('.exchange-card').forEach(card => {
                 card.classList.remove('selected');
             });
-
-            // تحديد المنصة الجديدة
             document.getElementById(exchangeId + '-card').classList.add('selected');
             selectedExchange = exchangeId;
-
-            // إظهار قسم API
             const apiSection = document.getElementById('api-section');
             apiSection.classList.add('active');
-            
-            // تحديث اسم المنصة
             document.getElementById('selected-exchange-name').textContent = exchanges[exchangeId].name;
-
-            // إظهار/إخفاء حقل passphrase
             const passphraseInput = document.getElementById('api-passphrase');
             if (exchanges[exchangeId].requiresPassphrase) {
                 passphraseInput.style.display = 'block';
             } else {
                 passphraseInput.style.display = 'none';
             }
-
-            // مسح الحقول
             document.getElementById('api-key').value = '';
             document.getElementById('api-secret').value = '';
             passphraseInput.value = '';
         }
 
-        // الاتصال بالمنصة
         async function connectExchange() {
             if (!selectedExchange) {
                 alert('⚠️ الرجاء اختيار منصة أولاً');
@@ -1194,10 +1185,7 @@
             connectBtn.textContent = '⏳ جاري الاتصال...';
 
             try {
-                // محاكاة الاتصال (استبدلها بـ API حقيقي)
                 const balance = await simulateExchangeConnection(selectedExchange, apiKey, apiSecret, passphrase);
-                
-                // حفظ بيانات الاتصال
                 exchangeConnection = {
                     exchange: selectedExchange,
                     apiKey: apiKey,
@@ -1208,17 +1196,11 @@
                 };
 
                 isRealTrading = true;
-
-                // تحديث واجهة المستخدم
                 updateExchangeStatus(selectedExchange, true);
                 showRealWallet(balance);
-                
-                // تحديث المحفظة في الواجهة الرئيسية
                 walletBalance = balance;
                 updateCalculatedAmount();
-
                 alert('✅ تم الاتصال بنجاح بمنصة ' + exchanges[selectedExchange].name);
-
             } catch (error) {
                 alert('❌ فشل الاتصال: ' + error.message);
                 connectBtn.disabled = false;
@@ -1226,18 +1208,15 @@
             }
         }
 
-        // محاكاة الاتصال (استبدلها بـ API حقيقي)
         async function simulateExchangeConnection(exchange, apiKey, apiSecret, passphrase) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    // محاكاة نجاح الاتصال برصيد عشوائي
                     const balance = Math.random() * 5000 + 500;
                     resolve(balance);
                 }, 1500);
             });
         }
 
-        // تحديث حالة المنصة في الواجهة
         function updateExchangeStatus(exchangeId, isConnected) {
             const statusElement = document.getElementById(exchangeId + '-status');
             if (isConnected) {
@@ -1247,7 +1226,6 @@
             }
         }
 
-        // إظهار المحفظة الحقيقية
         function showRealWallet(balance) {
             document.getElementById('api-section').classList.remove('active');
             document.getElementById('real-wallet').classList.add('active');
@@ -1255,48 +1233,33 @@
             document.getElementById('real-balance').textContent = '$' + balance.toFixed(2);
         }
 
-        // فصل الاتصال والعودة للتجريبي
         function disconnectExchange() {
             if (confirm('هل تريد فصل الاتصال والعودة للحساب التجريبي؟')) {
                 exchangeConnection = null;
                 isRealTrading = false;
-                
-                // إعادة تعيين المحفظة للتجريبية
                 walletBalance = 1000.00;
                 updateCalculatedAmount();
-                
                 document.getElementById('real-wallet').classList.remove('active');
                 updateExchangeStatus(selectedExchange, false);
-                
                 selectedExchange = null;
                 document.querySelectorAll('.exchange-card').forEach(card => {
                     card.classList.remove('selected');
                 });
-                
                 alert('✅ تم فصل الاتصال والعودة للحساب التجريبي ($1,000)');
             }
         }
 
-        // === WebSocket للأسعار الفورية ===
-        let binanceWS = null;
-        let wsReconnectTimer = null;
-        
-        // دالة الاتصال بـ WebSocket
         function connectWebSocket(symbol) {
             if (binanceWS) {
                 binanceWS.close();
             }
-            
             const wsSymbol = symbol.toLowerCase();
             const wsUrl = `wss://stream.binance.com:9443/ws/${wsSymbol}@ticker`;
-            
             binanceWS = new WebSocket(wsUrl);
-            
             binanceWS.onopen = () => {
                 console.log('✅ WebSocket connected for', symbol);
                 document.getElementById('botStatus').innerHTML = '🟢 متصل بالأسعار الفورية';
             };
-            
             binanceWS.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
@@ -1304,8 +1267,6 @@
                         const price = parseFloat(data.c);
                         document.getElementById('currentPrice').textContent = '$' + price.toFixed(4);
                         document.getElementById('currentPriceDisplay').style.display = 'block';
-                        
-                        // مراقبة الأسعار إذا كانت الاستراتيجية مفعلة
                         if (isStrategyActive) {
                             monitorPrice();
                         }
@@ -1314,17 +1275,13 @@
                     console.log('WebSocket parse error:', e);
                 }
             };
-            
             binanceWS.onerror = (error) => {
                 console.log('WebSocket error:', error);
                 document.getElementById('botStatus').innerHTML = '🟡 خطأ في الاتصال';
             };
-            
             binanceWS.onclose = () => {
                 console.log('WebSocket closed for', symbol);
                 document.getElementById('botStatus').innerHTML = '🟡 إعادة الاتصال...';
-                
-                // إعادة الاتصال بعد 3 ثواني
                 if (wsReconnectTimer) clearTimeout(wsReconnectTimer);
                 wsReconnectTimer = setTimeout(() => {
                     if (currentSymbol) {
@@ -1333,67 +1290,19 @@
                 }, 3000);
             };
         }
-        
-        // === المتغيرات الأساسية ===
-        const BOT_TOKEN = '8575662863:AAFvaDlDKRNX9c6kSB6iHST30TIZf1nqzMo';
-        const CHAT_ID = '5155984592';
-        
-        let currentSymbol = 'BTCUSDT';
-        let candleData = null;
-        let selectedMode = 'isolated';
-        let selectedLongTarget = 1;
-        let selectedShortTarget = 1;
-        let marginPercent = 50;
-        let leverage = 1;
-        let quantityPercent = 10;
-        let walletBalance = 1000.00;
-        let todayProfitPercent = 0;
-        let todayLossPercent = 0;
-        
-        // === متغيرات متعددة الصفقات ===
-        let isStrategyActive = false;
-        let tradeStatus = 'waiting'; // 'waiting', 'long_entry', 'short_entry', 'hit_target', 'hit_stop'
-        let enteredPrice = 0;
-        let isLongPosition = false;
-        let hitTargets = {};
-        let stopHit = false;
-        let notificationSent = {
-            strategyActivated: false,
-            entryLong: false,
-            entryShort: false,
-            stopLoss: false,
-            targetAchieved: false
-        };
-        let tradeStartTime = null;
-        let tradeCount = 0;
-        let todayTrades = [];
-        let lastEntryTime = 0;
-        let entryCooldown = 5000; // 5 ثواني بين الصفقات لمنع التكرار السريع
-        
-        // === متغير إضافي: تتبع إذا كانت هناك صفقة مفتوحة حالياً ===
-        let isTradeOpen = false; // NEW: لمنع دخول صفقة جديدة أثناء وجود صفقة مفتوحة
 
-        // === متغيرات إضافية لضبط الوقت ===
-        let avoidTradingPeriod = false;
-        let lastCandleUpdate = null;
-        let currentDay = null;
-
-        // دالة إرسال رسالة إلى البوت - تم تعديل جميع الرسائل حسب الطلب
         async function sendTelegramMessage(message) {
             try {
                 const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         chat_id: CHAT_ID,
                         text: message,
                         parse_mode: 'HTML'
                     })
                 });
-                
                 const data = await response.json();
                 console.log('تم إرسال الرسالة إلى البوت:', data.ok ? '✅' : '❌');
                 return data.ok;
@@ -1403,34 +1312,21 @@
             }
         }
 
-        // تحديث التاريخ ونسب الربح/الخسارة
         function updateDateAndStats() {
             const today = new Date();
             currentDay = today.getUTCDate();
-            
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                timeZone: 'UTC'
-            };
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
             const dateStr = today.toLocaleDateString('ar-SA', options);
             document.getElementById('todayDate').textContent = dateStr;
-            
             todayProfitPercent = (Math.random() * 15 + 1).toFixed(1);
             todayLossPercent = (Math.random() * 10 + 1).toFixed(1);
-            
             document.getElementById('profitPercent').textContent = todayProfitPercent + '%';
             document.getElementById('lossPercent').textContent = todayLossPercent + '%';
         }
 
-        // التحقق من وقت التداول
         function checkTradingTime() {
             const now = new Date();
             const utcHour = now.getUTCHours();
-            
-            // منع التداول في الساعة الأولى بعد 00:00 UTC
             if (utcHour === 0) {
                 avoidTradingPeriod = true;
                 return false;
@@ -1440,38 +1336,31 @@
             }
         }
 
-        // التحقق من اليوم الجديد
         function checkNewDay() {
             const now = new Date();
             const todayDate = now.getUTCDate();
-            
             if (todayDate !== currentDay) {
                 currentDay = todayDate;
                 todayTrades = [];
                 tradeCount = 0;
                 console.log('📅 تم التبديل إلى يوم جديد:', currentDay);
-                
-                // طلب بيانات الشمعة الجديدة
                 if (isStrategyActive && currentSymbol) {
                     setTimeout(() => {
                         loadCandleDataForNewDay();
-                    }, 60000); // انتظر دقيقة بعد منتصف الليل
+                    }, 60000);
                 }
                 return true;
             }
             return false;
         }
 
-        // تحميل بيانات شمعة اليوم الجديد
         async function loadCandleDataForNewDay() {
             try {
                 console.log('📊 جاري تحميل بيانات شمعة اليوم الجديد...');
                 const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=24`);
-                
                 if (response.ok) {
                     const data = await response.json();
                     processCandleData(data);
-                    
                     const newDayMessage = `
 📅 <b>تم تحديث بيانات اليوم الجديد</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1482,7 +1371,6 @@
 🕒 تم التحديث تلقائياً لليوم الجديد
 ✅ جاهز لصفقات اليوم
                     `;
-                    
                     sendTelegramMessage(newDayMessage);
                 }
             } catch (error) {
@@ -1490,36 +1378,28 @@
             }
         }
 
-        // حساب مدة الصفقة
         function getTradeDuration() {
             if (!tradeStartTime) return '0 دقيقة';
-            
             const now = new Date();
             const durationMs = now - tradeStartTime;
             const durationMinutes = Math.floor(durationMs / (1000 * 60));
-            
             return durationMinutes + ' دقيقة';
         }
 
-        // إعادة تعيين حالة الصفقة الحالية
         function resetTradeState() {
             tradeStatus = 'waiting';
             enteredPrice = 0;
             stopHit = false;
             hitTargets = {};
-            isTradeOpen = false; // NEW: إعادة تعيين حالة الصفقة المفتوحة
-            
+            isTradeOpen = false;
             notificationSent.entryLong = false;
             notificationSent.entryShort = false;
             notificationSent.stopLoss = false;
             notificationSent.targetAchieved = false;
-            
             tradeStartTime = null;
-            
             console.log('🔄 تم إعادة تعيين حالة الصفقة، جاهز للدخول التالي');
         }
 
-        // إعادة تعيين جميع الإشعارات
         function resetAllNotifications() {
             notificationSent = {
                 strategyActivated: false,
@@ -1528,15 +1408,13 @@
                 stopLoss: false,
                 targetAchieved: false
             };
-            
             hitTargets = {};
             stopHit = false;
-            isTradeOpen = false; // NEW: تأكيد إعادة التعيين
+            isTradeOpen = false;
             tradeStartTime = null;
             lastEntryTime = 0;
         }
 
-        // إضافة صفقة إلى سجل اليوم
         function addTradeToHistory(tradeType, entryPrice, exitPrice, profitLoss, duration, targetHit = null, stopHit = false) {
             const trade = {
                 id: tradeCount + 1,
@@ -1549,71 +1427,49 @@
                 stopHit: stopHit,
                 timestamp: new Date().toISOString()
             };
-            
             todayTrades.push(trade);
             tradeCount++;
-            
-            // تحديث رصيد المحفظة
             walletBalance += parseFloat(profitLoss);
             updateCalculatedAmount();
-            
-            // إذا كان التداول الحقيقي مفعل، تحديث الرصيد في القائمة الجانبية أيضاً
             if (isRealTrading && exchangeConnection) {
                 exchangeConnection.balance = walletBalance;
                 document.getElementById('real-balance').textContent = '$' + walletBalance.toFixed(2);
             }
-            
             console.log(`📝 تم إضافة صفقة ${tradeCount}:`, trade);
         }
 
-        // دالة مراقبة الأسعار وإرسال التنبيهات
         async function monitorPrice() {
             if (!isStrategyActive || !candleData) return;
-            
             try {
-                // التحقق من اليوم الجديد
                 checkNewDay();
-                
-                // التحقق من وقت التداول
                 if (!checkTradingTime()) {
                     const now = new Date();
                     const utcHour = now.getUTCHours();
                     if (utcHour === 0) {
-                        // إذا كانت الساعة 00:00 UTC، انتظر حتى 01:00
                         console.log('⏳ فترة الانتظار: 00:00-01:00 UTC');
                         return;
                     }
                 }
-                
                 const currentPrice = parseFloat(document.getElementById('currentPrice').textContent.replace('$', '').replace(',', ''));
                 const now = Date.now();
-                
-                // حساب المبلغ المستخدم الحالي
                 const tradeAmount = (walletBalance * (quantityPercent / 100));
                 
-                // === مراقبة دخول اللونج ===
                 if (currentPrice > candleData.high && tradeStatus === 'waiting' && !isTradeOpen) {
-                    // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
                         return;
                     }
-                    
                     tradeStatus = 'long_entry';
                     enteredPrice = candleData.high;
                     isLongPosition = true;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
                     isTradeOpen = true;
-                    
-                    // إذا كان التداول الحقيقي مفعل، تنفيذ الصفقة على المنصة
                     if (isRealTrading && exchangeConnection) {
                         console.log('🚀 تنفيذ صفقة LONG حقيقية على', exchanges[exchangeConnection.exchange].name);
                     }
-                    
                     if (!notificationSent.entryLong) {
                         notificationSent.entryLong = true;
-                        
                         const message = `
 🚨 <b>دخول صفقة لونج</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1639,29 +1495,22 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                     }
                 }
                 
-                // === مراقبة دخول الشورت ===
                 if (currentPrice < candleData.low && tradeStatus === 'waiting' && !isTradeOpen) {
-                    // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
                         return;
                     }
-                    
                     tradeStatus = 'short_entry';
                     enteredPrice = candleData.low;
                     isLongPosition = false;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
                     isTradeOpen = true;
-                    
-                    // إذا كان التداول الحقيقي مفعل، تنفيذ الصفقة على المنصة
                     if (isRealTrading && exchangeConnection) {
                         console.log('🚀 تنفيذ صفقة SHORT حقيقية على', exchanges[exchangeConnection.exchange].name);
                     }
-                    
                     if (!notificationSent.entryShort) {
                         notificationSent.entryShort = true;
-                        
                         const message = `
 🚨 <b>دخول صفقة شورت</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1687,13 +1536,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                     }
                 }
                 
-                // === مراقبة ضرب أهداف اللونج ===
                 if (tradeStatus === 'long_entry') {
-                    // حساب المبلغ المتبقي في الصفقة
                     let remainingAmount = tradeAmount;
                     let totalClosed = 0;
-                    
-                    // حساب المبالغ المغلقة سابقاً
                     for (let j = 1; j <= 5; j++) {
                         if (hitTargets[`long_${j}`]) {
                             const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
@@ -1712,21 +1557,16 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                         
                         if (currentPrice >= targetPrice && !hitTargets[`long_${targetPercent}`]) {
                             hitTargets[`long_${targetPercent}`] = true;
-                            
-                            // حساب المبلغ الذي سيتم إغلاقه في هذا الهدف
                             let amountToClose = 0;
                             if (i === 1) {
-                                amountToClose = tradeAmount * 0.2; // 20% من المبلغ الأصلي
+                                amountToClose = tradeAmount * 0.2;
                             } else {
-                                // 20% من المبلغ المتبقي
                                 amountToClose = remainingAmount * 0.2;
                             }
-                            
                             const profitWithoutLeverage = targetPercent;
                             const profitWithLeverage = (targetPercent * leverage).toFixed(2);
                             const profitAmount = (amountToClose * (profitWithLeverage / 100)).toFixed(2);
                             
-                            // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                             if (isRealTrading && exchangeConnection) {
                                 console.log('🎯 إغلاق صفقة LONG حقيقية عند الهدف', i);
                             }
@@ -1754,11 +1594,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             `;
                             sendTelegramMessage(message);
                             
-                            // تحديث الرصيد
                             walletBalance += parseFloat(profitAmount);
                             updateCalculatedAmount();
                             
-                            // التحقق إذا تم تحقيق جميع الأهداف
                             let allTargetsHit = true;
                             for (let j = 1; j <= 5; j++) {
                                 if (!hitTargets[`long_${j}`]) {
@@ -1767,9 +1605,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                                 }
                             }
                             
-                            // إذا تم تحقيق جميع الأهداف، نغلق الصفقة
                             if (allTargetsHit || stopHit) {
-                                // إضافة الصفقة إلى السجل
                                 addTradeToHistory(
                                     'long',
                                     candleData.high,
@@ -1790,13 +1626,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     }
                 }
                 
-                // === مراقبة ضرب أهداف الشورت ===
                 if (tradeStatus === 'short_entry') {
-                    // حساب المبلغ المتبقي في الصفقة
                     let remainingAmount = tradeAmount;
                     let totalClosed = 0;
-                    
-                    // حساب المبالغ المغلقة سابقاً
                     for (let j = 1; j <= 5; j++) {
                         if (hitTargets[`short_${j}`]) {
                             const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
@@ -1815,21 +1647,16 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                         
                         if (currentPrice <= targetPrice && !hitTargets[`short_${targetPercent}`]) {
                             hitTargets[`short_${targetPercent}`] = true;
-                            
-                            // حساب المبلغ الذي سيتم إغلاقه في هذا الهدف
                             let amountToClose = 0;
                             if (i === 1) {
-                                amountToClose = tradeAmount * 0.2; // 20% من المبلغ الأصلي
+                                amountToClose = tradeAmount * 0.2;
                             } else {
-                                // 20% من المبلغ المتبقي
                                 amountToClose = remainingAmount * 0.2;
                             }
-                            
                             const profitWithoutLeverage = targetPercent;
                             const profitWithLeverage = (targetPercent * leverage).toFixed(2);
                             const profitAmount = (amountToClose * (profitWithLeverage / 100)).toFixed(2);
                             
-                            // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                             if (isRealTrading && exchangeConnection) {
                                 console.log('🎯 إغلاق صفقة SHORT حقيقية عند الهدف', i);
                             }
@@ -1857,11 +1684,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             `;
                             sendTelegramMessage(message);
                             
-                            // تحديث الرصيد
                             walletBalance += parseFloat(profitAmount);
                             updateCalculatedAmount();
                             
-                            // التحقق إذا تم تحقيق جميع الأهداف
                             let allTargetsHit = true;
                             for (let j = 1; j <= 5; j++) {
                                 if (!hitTargets[`short_${j}`]) {
@@ -1870,9 +1695,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                                 }
                             }
                             
-                            // إذا تم تحقيق جميع الأهداف، نغلق الصفقة
                             if (allTargetsHit || stopHit) {
-                                // إضافة الصفقة إلى السجل
                                 addTradeToHistory(
                                     'short',
                                     candleData.low,
@@ -1893,18 +1716,12 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     }
                 }
                 
-                // === مراقبة ضرب الستوب للونج ===
                 if (tradeStatus === 'long_entry' && !stopHit) {
-                    const stopPrice = candleData.high * 0.999999; // -0.0001%
-                    
+                    const stopPrice = candleData.high * 0.999999;
                     if (currentPrice <= stopPrice) {
                         stopHit = true;
-                        
-                        // حساب المبلغ المتبقي في الصفقة
                         let remainingAmount = tradeAmount;
                         let totalClosed = 0;
-                        
-                        // حساب المبالغ المغلقة سابقاً
                         for (let j = 1; j <= 5; j++) {
                             if (hitTargets[`long_${j}`]) {
                                 const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
@@ -1916,7 +1733,6 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                         }
                         remainingAmount = tradeAmount - totalClosed;
                         
-                        // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                         if (isRealTrading && exchangeConnection) {
                             console.log('🛑 إغلاق صفقة LONG بخسارة على المنصة الحقيقية');
                         }
@@ -1951,11 +1767,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             `;
                             sendTelegramMessage(message);
                             
-                            // تحديث الرصيد
                             walletBalance -= parseFloat(lossAmount);
                             updateCalculatedAmount();
                             
-                            // إضافة الصفقة إلى السجل
                             addTradeToHistory(
                                 'long',
                                 candleData.high,
@@ -1966,24 +1780,17 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                                 true
                             );
                             
-                            // إعادة التعيين للصفقة التالية
                             setTimeout(resetTradeState, 1000);
                         }
                     }
                 }
                 
-                // === مراقبة ضرب الستوب للشورت ===
                 if (tradeStatus === 'short_entry' && !stopHit) {
-                    const stopPrice = candleData.low * 1.000001; // +0.0001%
-                    
+                    const stopPrice = candleData.low * 1.000001;
                     if (currentPrice >= stopPrice) {
                         stopHit = true;
-                        
-                        // حساب المبلغ المتبقي في الصفقة
                         let remainingAmount = tradeAmount;
                         let totalClosed = 0;
-                        
-                        // حساب المبالغ المغلقة سابقاً
                         for (let j = 1; j <= 5; j++) {
                             if (hitTargets[`short_${j}`]) {
                                 const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
@@ -1995,7 +1802,6 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                         }
                         remainingAmount = tradeAmount - totalClosed;
                         
-                        // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                         if (isRealTrading && exchangeConnection) {
                             console.log('🛑 إغلاق صفقة SHORT بخسارة على المنصة الحقيقية');
                         }
@@ -2030,11 +1836,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             `;
                             sendTelegramMessage(message);
                             
-                            // تحديث الرصيد
                             walletBalance -= parseFloat(lossAmount);
                             updateCalculatedAmount();
                             
-                            // إضافة الصفقة إلى السجل
                             addTradeToHistory(
                                 'short',
                                 candleData.low,
@@ -2045,7 +1849,6 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                                 true
                             );
                             
-                            // إعادة التعيين للصفقة التالية
                             setTimeout(resetTradeState, 1000);
                         }
                     }
@@ -2055,7 +1858,6 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
             }
         }
 
-        // دالة إرسال تقرير نهاية اليوم
         function sendEndOfDayReport() {
             const today = new Date();
             const dateStr = today.toLocaleDateString('ar-SA', {
@@ -2069,7 +1871,6 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
             let winningTrades = 0;
             let losingTrades = 0;
             
-            // حساب إحصائيات اليوم
             todayTrades.forEach(trade => {
                 totalProfit += trade.profitLoss;
                 if (trade.profitLoss > 0) {
@@ -2119,11 +1920,8 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             `;
             
             sendTelegramMessage(message);
-            
-            // إعادة تعيين سجل اليوم
             todayTrades = [];
             tradeCount = 0;
-            
             updateDateAndStats();
         }
 
@@ -2178,10 +1976,8 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 
         function updateTargetPrices() {
             if (!candleData) return;
-            
             const longEntry = candleData.high;
             const shortEntry = candleData.low;
-            
             for (let i = 1; i <= 5; i++) {
                 document.getElementById('longTarget' + i).textContent = '$' + (longEntry * (1 + (i * 0.01))).toFixed(4);
                 document.getElementById('shortTarget' + i).textContent = '$' + (shortEntry * (1 - (i * 0.01))).toFixed(4);
@@ -2190,7 +1986,6 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 
         async function loadCryptoData() {
             const symbolInput = document.getElementById('symbolInput').value.trim().toUpperCase();
-            
             if (!symbolInput) {
                 alert('⚠️ الرجاء إدخال رمز العملة');
                 return;
@@ -2203,10 +1998,8 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             try {
                 const exchangeInfo = await fetch('https://api.binance.com/api/v3/exchangeInfo');
                 const infoData = await exchangeInfo.json();
-                
                 const allSymbols = infoData.symbols.map(s => s.symbol);
                 let foundSymbol = null;
-                
                 const possibleSymbols = [
                     symbolInput + 'USDT',
                     'USDT' + symbolInput,
@@ -2257,7 +2050,6 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                 
                 const data = await response.json();
                 processCandleData(data);
-
             } catch (error) {
                 document.getElementById('loadingCandle').style.display = 'none';
                 document.getElementById('errorCandle').textContent = '❌ ' + error.message;
@@ -2271,12 +2063,10 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             }
 
             let midnightCandle = null;
-            
             for (const candle of data) {
                 const timestamp = candle[0];
                 const date = new Date(timestamp);
                 const hours = date.getUTCHours();
-                
                 if (hours === 0) {
                     midnightCandle = candle;
                     break;
@@ -2286,12 +2076,10 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             if (!midnightCandle) {
                 const moreResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=48`);
                 const moreData = await moreResponse.json();
-                
                 for (const candle of moreData) {
                     const timestamp = candle[0];
                     const date = new Date(timestamp);
                     const hours = date.getUTCHours();
-                    
                     if (hours === 0) {
                         midnightCandle = candle;
                         break;
@@ -2311,20 +2099,13 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 
             document.getElementById('longEntry').textContent = '$' + candleData.high.toFixed(4);
             document.getElementById('shortEntry').textContent = '$' + candleData.low.toFixed(4);
-            
             document.getElementById('loadingCandle').style.display = 'none';
             document.getElementById('candleData').style.display = 'block';
-
             updateTargetPrices();
-            
             document.querySelectorAll('#longTargets .target-row')[0].classList.add('selected');
             document.querySelectorAll('#shortTargets .target-row')[0].classList.add('selected');
-
-            // === تشغيل WebSocket بعد تحميل البيانات ===
             connectWebSocket(currentSymbol);
             updateCalculatedAmount();
-            
-            // تعيين تاريخ آخر تحديث
             lastCandleUpdate = new Date();
             currentDay = new Date().getUTCDate();
         }
@@ -2420,7 +2201,6 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
 
         function cancelStrategy() {
             if (confirm('❌ هل تريد إلغاء الاستراتيجية؟')) {
-                // إغلاق WebSocket
                 if (binanceWS) {
                     binanceWS.close();
                     binanceWS = null;
@@ -2429,20 +2209,17 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
                     clearTimeout(wsReconnectTimer);
                     wsReconnectTimer = null;
                 }
-                
                 document.getElementById('leverageSlider').value = 1;
                 document.getElementById('marginSlider').value = 50;
                 document.getElementById('quantitySlider').value = 10;
                 updateLeverage(1);
                 updateMargin(50);
                 updateQuantity(10);
-                
                 isStrategyActive = false;
                 tradeStatus = 'waiting';
                 resetAllNotifications();
                 todayTrades = [];
                 tradeCount = 0;
-                
                 alert('✅ تم إلغاء الاستراتيجية بنجاح');
             }
         }
@@ -2469,17 +2246,14 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
                 }, timeUntilEnd);
             }
             
-            // === فحص اليوم الجديد كل دقيقة ===
             setInterval(() => {
                 checkNewDay();
-            }, 60000); // كل دقيقة
+            }, 60000);
             
-            // === تقرير كل ساعة للتأكد من عمل النظام ===
             let lastReportTime = 0;
             
             setInterval(async () => {
                 const now = Date.now();
-                // إرسال تقرير كل ساعة (3600000 ملي ثانية)
                 if (now - lastReportTime >= 3600000) {
                     const currentTime = new Date().toLocaleTimeString('ar-SA');
                     const currentPrice = document.getElementById('currentPrice')?.textContent || 'غير متاح';
@@ -2507,7 +2281,7 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
                         console.log('⚠️ فشل إرسال تقرير الساعة:', error);
                     }
                 }
-            }, 60000); // التحقق كل دقيقة
+            }, 60000);
         };
     </script>
 </body>
