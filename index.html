@@ -1378,7 +1378,7 @@
         let lastCandleUpdate = null;
         let currentDay = null;
 
-        // دالة إرسال رسالة إلى البوت
+        // دالة إرسال رسالة إلى البوت - تم تعديل جميع الرسائل حسب الطلب
         async function sendTelegramMessage(message) {
             try {
                 const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
@@ -1588,8 +1588,11 @@
                 const currentPrice = parseFloat(document.getElementById('currentPrice').textContent.replace('$', '').replace(',', ''));
                 const now = Date.now();
                 
+                // حساب المبلغ المستخدم الحالي
+                const tradeAmount = (walletBalance * (quantityPercent / 100));
+                
                 // === مراقبة دخول اللونج ===
-                if (currentPrice > candleData.high && tradeStatus === 'waiting' && !isTradeOpen) { // NEW: Added !isTradeOpen
+                if (currentPrice > candleData.high && tradeStatus === 'waiting' && !isTradeOpen) {
                     // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
@@ -1601,12 +1604,11 @@
                     isLongPosition = true;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
-                    isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
+                    isTradeOpen = true;
                     
                     // إذا كان التداول الحقيقي مفعل، تنفيذ الصفقة على المنصة
                     if (isRealTrading && exchangeConnection) {
                         console.log('🚀 تنفيذ صفقة LONG حقيقية على', exchanges[exchangeConnection.exchange].name);
-                        // هنا يتم إرسال أمر الشراء إلى المنصة عبر API
                     }
                     
                     if (!notificationSent.entryLong) {
@@ -1638,7 +1640,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                 }
                 
                 // === مراقبة دخول الشورت ===
-                if (currentPrice < candleData.low && tradeStatus === 'waiting' && !isTradeOpen) { // NEW: Added !isTradeOpen
+                if (currentPrice < candleData.low && tradeStatus === 'waiting' && !isTradeOpen) {
                     // التحقق من التبريد بين الصفقات
                     if (now - lastEntryTime < entryCooldown) {
                         console.log('⏳ في فترة التبريد بين الصفقات');
@@ -1650,12 +1652,11 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                     isLongPosition = false;
                     tradeStartTime = new Date();
                     lastEntryTime = now;
-                    isTradeOpen = true; // NEW: تعيين أن هناك صفقة مفتوحة
+                    isTradeOpen = true;
                     
                     // إذا كان التداول الحقيقي مفعل، تنفيذ الصفقة على المنصة
                     if (isRealTrading && exchangeConnection) {
                         console.log('🚀 تنفيذ صفقة SHORT حقيقية على', exchanges[exchangeConnection.exchange].name);
-                        // هنا يتم إرسال أمر البيع إلى المنصة عبر API
                     }
                     
                     if (!notificationSent.entryShort) {
@@ -1688,6 +1689,23 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                 
                 // === مراقبة ضرب أهداف اللونج ===
                 if (tradeStatus === 'long_entry') {
+                    // حساب المبلغ المتبقي في الصفقة
+                    let remainingAmount = tradeAmount;
+                    let totalClosed = 0;
+                    
+                    // حساب المبالغ المغلقة سابقاً
+                    for (let j = 1; j <= 5; j++) {
+                        if (hitTargets[`long_${j}`]) {
+                            const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
+                                                       (j === 2) ? (tradeAmount - tradeAmount * 0.2) * 0.2 :
+                                                       (j === 3) ? (tradeAmount - totalClosed) * 0.2 :
+                                                       (j === 4) ? (tradeAmount - totalClosed) * 0.2 :
+                                                       (j === 5) ? (tradeAmount - totalClosed) : 0;
+                            totalClosed += closedAtThisTarget;
+                        }
+                    }
+                    remainingAmount = tradeAmount - totalClosed;
+                    
                     for (let i = 1; i <= 5; i++) {
                         const targetPercent = i;
                         const targetPrice = candleData.high * (1 + (targetPercent * 0.01));
@@ -1695,15 +1713,22 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                         if (currentPrice >= targetPrice && !hitTargets[`long_${targetPercent}`]) {
                             hitTargets[`long_${targetPercent}`] = true;
                             
-                            const profitWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(2);
-                            const profitWithLeverage = (profitWithoutLeverage * leverage).toFixed(2);
-                            const tradeAmount = updateCalculatedAmount();
-                            const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
+                            // حساب المبلغ الذي سيتم إغلاقه في هذا الهدف
+                            let amountToClose = 0;
+                            if (i === 1) {
+                                amountToClose = tradeAmount * 0.2; // 20% من المبلغ الأصلي
+                            } else {
+                                // 20% من المبلغ المتبقي
+                                amountToClose = remainingAmount * 0.2;
+                            }
+                            
+                            const profitWithoutLeverage = targetPercent;
+                            const profitWithLeverage = (targetPercent * leverage).toFixed(2);
+                            const profitAmount = (amountToClose * (profitWithLeverage / 100)).toFixed(2);
                             
                             // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                             if (isRealTrading && exchangeConnection) {
                                 console.log('🎯 إغلاق صفقة LONG حقيقية عند الهدف', i);
-                                // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
                             }
                             
                             const message = `
@@ -1715,12 +1740,13 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
 ⏰ المدة: ${getTradeDuration()}
 ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-📊 <b>الربح:</b>
-• بدون رافعة: +${profitWithoutLeverage}%
-• مع الرافعة ${leverage}x: +${profitWithLeverage}%
+📊 <b>تفاصيل الإغلاق:</b>
+• إغلاق: 20% من الكمية
+• الربح بدون رافعة: +${profitWithoutLeverage}%
+• الربح مع الرافعة ${leverage}x: +${profitWithLeverage}%
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-💵 المبلغ: $${tradeAmount.toFixed(2)}
-💰 الربح: $${profitAmount}
+💰 المبلغ المستخدم: $${amountToClose.toFixed(2)}
+💰 الربح المحقق: $${profitAmount}
 🏦 الرصيد الجديد: $${(walletBalance + parseFloat(profitAmount)).toFixed(2)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الصفقة رقم:</b> ${tradeCount + 1}
@@ -1728,18 +1754,11 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             `;
                             sendTelegramMessage(message);
                             
-                            // إضافة الصفقة إلى السجل
-                            addTradeToHistory(
-                                'long',
-                                candleData.high,
-                                currentPrice,
-                                parseFloat(profitAmount),
-                                getTradeDuration(),
-                                targetPercent,
-                                false
-                            );
+                            // تحديث الرصيد
+                            walletBalance += parseFloat(profitAmount);
+                            updateCalculatedAmount();
                             
-                            // التحقق إذا تم تحقيق جميع الأهداف أو ضرب الستوب
+                            // التحقق إذا تم تحقيق جميع الأهداف
                             let allTargetsHit = true;
                             for (let j = 1; j <= 5; j++) {
                                 if (!hitTargets[`long_${j}`]) {
@@ -1748,11 +1767,22 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                                 }
                             }
                             
-                            // إذا تم تحقيق جميع الأهداف أو ضرب الستوب، نغلق الصفقة
+                            // إذا تم تحقيق جميع الأهداف، نغلق الصفقة
                             if (allTargetsHit || stopHit) {
+                                // إضافة الصفقة إلى السجل
+                                addTradeToHistory(
+                                    'long',
+                                    candleData.high,
+                                    currentPrice,
+                                    parseFloat(profitAmount),
+                                    getTradeDuration(),
+                                    targetPercent,
+                                    false
+                                );
+                                
                                 setTimeout(() => {
                                     resetTradeState();
-                                    console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف أو ضرب الستوب');
+                                    console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف');
                                 }, 1000);
                             }
                             break;
@@ -1762,6 +1792,23 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                 
                 // === مراقبة ضرب أهداف الشورت ===
                 if (tradeStatus === 'short_entry') {
+                    // حساب المبلغ المتبقي في الصفقة
+                    let remainingAmount = tradeAmount;
+                    let totalClosed = 0;
+                    
+                    // حساب المبالغ المغلقة سابقاً
+                    for (let j = 1; j <= 5; j++) {
+                        if (hitTargets[`short_${j}`]) {
+                            const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
+                                                       (j === 2) ? (tradeAmount - tradeAmount * 0.2) * 0.2 :
+                                                       (j === 3) ? (tradeAmount - totalClosed) * 0.2 :
+                                                       (j === 4) ? (tradeAmount - totalClosed) * 0.2 :
+                                                       (j === 5) ? (tradeAmount - totalClosed) : 0;
+                            totalClosed += closedAtThisTarget;
+                        }
+                    }
+                    remainingAmount = tradeAmount - totalClosed;
+                    
                     for (let i = 1; i <= 5; i++) {
                         const targetPercent = i;
                         const targetPrice = candleData.low * (1 - (targetPercent * 0.01));
@@ -1769,15 +1816,22 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                         if (currentPrice <= targetPrice && !hitTargets[`short_${targetPercent}`]) {
                             hitTargets[`short_${targetPercent}`] = true;
                             
-                            const profitWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(2);
-                            const profitWithLeverage = (profitWithoutLeverage * leverage).toFixed(2);
-                            const tradeAmount = updateCalculatedAmount();
-                            const profitAmount = (tradeAmount * (profitWithLeverage / 100)).toFixed(2);
+                            // حساب المبلغ الذي سيتم إغلاقه في هذا الهدف
+                            let amountToClose = 0;
+                            if (i === 1) {
+                                amountToClose = tradeAmount * 0.2; // 20% من المبلغ الأصلي
+                            } else {
+                                // 20% من المبلغ المتبقي
+                                amountToClose = remainingAmount * 0.2;
+                            }
+                            
+                            const profitWithoutLeverage = targetPercent;
+                            const profitWithLeverage = (targetPercent * leverage).toFixed(2);
+                            const profitAmount = (amountToClose * (profitWithLeverage / 100)).toFixed(2);
                             
                             // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                             if (isRealTrading && exchangeConnection) {
                                 console.log('🎯 إغلاق صفقة SHORT حقيقية عند الهدف', i);
-                                // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
                             }
                             
                             const message = `
@@ -1789,12 +1843,13 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ⏰ المدة: ${getTradeDuration()}
 ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-📊 <b>الربح:</b>
-• بدون رافعة: +${profitWithoutLeverage}%
-• مع الرافعة ${leverage}x: +${profitWithLeverage}%
+📊 <b>تفاصيل الإغلاق:</b>
+• إغلاق: 20% من الكمية
+• الربح بدون رافعة: +${profitWithoutLeverage}%
+• الربح مع الرافعة ${leverage}x: +${profitWithLeverage}%
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-💵 المبلغ: $${tradeAmount.toFixed(2)}
-💰 الربح: $${profitAmount}
+💰 المبلغ المستخدم: $${amountToClose.toFixed(2)}
+💰 الربح المحقق: $${profitAmount}
 🏦 الرصيد الجديد: $${(walletBalance + parseFloat(profitAmount)).toFixed(2)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الصفقة رقم:</b> ${tradeCount + 1}
@@ -1802,18 +1857,11 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             `;
                             sendTelegramMessage(message);
                             
-                            // إضافة الصفقة إلى السجل
-                            addTradeToHistory(
-                                'short',
-                                candleData.low,
-                                currentPrice,
-                                parseFloat(profitAmount),
-                                getTradeDuration(),
-                                targetPercent,
-                                false
-                            );
+                            // تحديث الرصيد
+                            walletBalance += parseFloat(profitAmount);
+                            updateCalculatedAmount();
                             
-                            // التحقق إذا تم تحقيق جميع الأهداف أو ضرب الستوب
+                            // التحقق إذا تم تحقيق جميع الأهداف
                             let allTargetsHit = true;
                             for (let j = 1; j <= 5; j++) {
                                 if (!hitTargets[`short_${j}`]) {
@@ -1822,11 +1870,22 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                                 }
                             }
                             
-                            // إذا تم تحقيق جميع الأهداف أو ضرب الستوب، نغلق الصفقة
+                            // إذا تم تحقيق جميع الأهداف، نغلق الصفقة
                             if (allTargetsHit || stopHit) {
+                                // إضافة الصفقة إلى السجل
+                                addTradeToHistory(
+                                    'short',
+                                    candleData.low,
+                                    currentPrice,
+                                    parseFloat(profitAmount),
+                                    getTradeDuration(),
+                                    targetPercent,
+                                    false
+                                );
+                                
                                 setTimeout(() => {
                                     resetTradeState();
-                                    console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف أو ضرب الستوب');
+                                    console.log('✅ تم إغلاق الصفقة بعد تحقيق جميع الأهداف');
                                 }, 1000);
                             }
                             break;
@@ -1841,10 +1900,25 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     if (currentPrice <= stopPrice) {
                         stopHit = true;
                         
+                        // حساب المبلغ المتبقي في الصفقة
+                        let remainingAmount = tradeAmount;
+                        let totalClosed = 0;
+                        
+                        // حساب المبالغ المغلقة سابقاً
+                        for (let j = 1; j <= 5; j++) {
+                            if (hitTargets[`long_${j}`]) {
+                                const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
+                                                           (j === 2) ? (tradeAmount - tradeAmount * 0.2) * 0.2 :
+                                                           (j === 3) ? (tradeAmount - totalClosed) * 0.2 :
+                                                           (j === 4) ? (tradeAmount - totalClosed) * 0.2 : 0;
+                                totalClosed += closedAtThisTarget;
+                            }
+                        }
+                        remainingAmount = tradeAmount - totalClosed;
+                        
                         // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                         if (isRealTrading && exchangeConnection) {
                             console.log('🛑 إغلاق صفقة LONG بخسارة على المنصة الحقيقية');
-                            // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
                         }
                         
                         if (!notificationSent.stopLoss) {
@@ -1852,8 +1926,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             
                             const lossWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(4);
                             const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(4);
-                            const tradeAmount = updateCalculatedAmount();
-                            const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
+                            const lossAmount = (remainingAmount * (lossWithLeverage / 100)).toFixed(2);
                             
                             const message = `
 ❌ <b>ضرب الستوب لوس</b>
@@ -1866,9 +1939,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
 • بدون رافعة: ${lossWithoutLeverage}%
-• مع الرافعة ${leverage}x: ${lossWithLeverage}%
+• مع الرافعة ${leverage}x: -${lossWithLeverage}%
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-💵 المبلغ: $${tradeAmount.toFixed(2)}
+💵 المبلغ المتبقي: $${remainingAmount.toFixed(2)}
 📉 الخسارة: $${lossAmount}
 🏦 الرصيد الجديد: $${(walletBalance - parseFloat(lossAmount)).toFixed(2)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1877,6 +1950,10 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
                             `;
                             sendTelegramMessage(message);
+                            
+                            // تحديث الرصيد
+                            walletBalance -= parseFloat(lossAmount);
+                            updateCalculatedAmount();
                             
                             // إضافة الصفقة إلى السجل
                             addTradeToHistory(
@@ -1902,10 +1979,25 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     if (currentPrice >= stopPrice) {
                         stopHit = true;
                         
+                        // حساب المبلغ المتبقي في الصفقة
+                        let remainingAmount = tradeAmount;
+                        let totalClosed = 0;
+                        
+                        // حساب المبالغ المغلقة سابقاً
+                        for (let j = 1; j <= 5; j++) {
+                            if (hitTargets[`short_${j}`]) {
+                                const closedAtThisTarget = (j === 1) ? tradeAmount * 0.2 : 
+                                                           (j === 2) ? (tradeAmount - tradeAmount * 0.2) * 0.2 :
+                                                           (j === 3) ? (tradeAmount - totalClosed) * 0.2 :
+                                                           (j === 4) ? (tradeAmount - totalClosed) * 0.2 : 0;
+                                totalClosed += closedAtThisTarget;
+                            }
+                        }
+                        remainingAmount = tradeAmount - totalClosed;
+                        
                         // إذا كان التداول الحقيقي مفعل، إغلاق الصفقة على المنصة
                         if (isRealTrading && exchangeConnection) {
                             console.log('🛑 إغلاق صفقة SHORT بخسارة على المنصة الحقيقية');
-                            // هنا يتم إرسال أمر إغلاق إلى المنصة عبر API
                         }
                         
                         if (!notificationSent.stopLoss) {
@@ -1913,8 +2005,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             
                             const lossWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(4);
                             const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(4);
-                            const tradeAmount = updateCalculatedAmount();
-                            const lossAmount = (tradeAmount * (lossWithLeverage / 100)).toFixed(2);
+                            const lossAmount = (remainingAmount * (lossWithLeverage / 100)).toFixed(2);
                             
                             const message = `
 ❌ <b>ضرب الستوب لوس</b>
@@ -1927,9 +2018,9 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
 • بدون رافعة: ${lossWithoutLeverage}%
-• مع الرافعة ${leverage}x: ${lossWithLeverage}%
+• مع الرافعة ${leverage}x: -${lossWithLeverage}%
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-💵 المبلغ: $${tradeAmount.toFixed(2)}
+💵 المبلغ المتبقي: $${remainingAmount.toFixed(2)}
 📉 الخسارة: $${lossAmount}
 🏦 الرصيد الجديد: $${(walletBalance - parseFloat(lossAmount)).toFixed(2)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1938,6 +2029,10 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}
                             `;
                             sendTelegramMessage(message);
+                            
+                            // تحديث الرصيد
+                            walletBalance -= parseFloat(lossAmount);
+                            updateCalculatedAmount();
                             
                             // إضافة الصفقة إلى السجل
                             addTradeToHistory(
@@ -2379,7 +2474,7 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
                 checkNewDay();
             }, 60000); // كل دقيقة
             
-            // === إضافة: تقرير كل ساعة للتأكد من عمل النظام ===
+            // === تقرير كل ساعة للتأكد من عمل النظام ===
             let lastReportTime = 0;
             
             setInterval(async () => {
