@@ -1,1 +1,15 @@
-{\n  "name": "your-package-name",\n  "version": "1.0.0",\n  "description": "Your description here",\n  "main": "index.js",\n  "dependencies": {\n    "ccxt": "latest",\n    "axios": "latest"\n  }\n}
+{
+  "name": "golden-strategy",
+  "version": "1.0.0",
+  "description": "Golden Trading Strategy Bot - الاستراتيجية الذهبية للتداول",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p $PORT"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
