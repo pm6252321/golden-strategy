@@ -732,6 +732,109 @@
             color: #00ccff;
         }
 
+        /* Market Type Selector Styles */
+        .market-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .market-btn {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            color: #d4af37;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .market-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .market-btn.selected {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .market-icon {
+            font-size: 1.3em;
+        }
+
+        .symbol-search-container {
+            position: relative;
+        }
+
+        .symbol-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.98);
+            border: 2px solid #ffd700;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .symbol-dropdown.active {
+            display: block;
+        }
+
+        .symbol-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #d4af37;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .symbol-option:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .symbol-option:last-child {
+            border-bottom: none;
+        }
+
+        .symbol-name {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .symbol-type {
+            font-size: 0.8em;
+            color: #d4af37;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .loading-symbols {
+            text-align: center;
+            padding: 10px;
+            color: #ffd700;
+            font-size: 0.9em;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 width: 260px;
@@ -767,6 +870,9 @@
             .date-stats {
                 grid-template-columns: 1fr;
                 gap: 15px;
+            }
+            .market-selector {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -920,10 +1026,28 @@
                         <strong>⏰ شمعة 00:00 UTC:</strong><br>
                         نستخدمها لتحديد Low و High فقط (لا للتداول)
                     </div>
+
+                    <!-- اختيار نوع السوق -->
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="text-align: center; margin-bottom: 15px; color: #ffd700;">📊 نوع السوق</h3>
+                        <div class="market-selector">
+                            <div class="market-btn selected" onclick="selectMarketType('spot')" id="spotMarket">
+                                <span class="market-icon">💎</span>
+                                <span>سبوت (Spot)</span>
+                            </div>
+                            <div class="market-btn" onclick="selectMarketType('futures')" id="futuresMarket">
+                                <span class="market-icon">⚡</span>
+                                <span>فيوتشر (Futures)</span>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="input-group">
+                    <div class="input-group symbol-search-container">
                         <label>رمز العملة (Symbol)</label>
-                        <input type="text" id="symbolInput" placeholder="مثال: BTC, ETH, POWER (اضغط ENTER)" value="BTC">
+                        <input type="text" id="symbolInput" placeholder="مثال: BTC, ETH, POWER (اضغط ENTER)" value="BTC" autocomplete="off">
+                        <div class="symbol-dropdown" id="symbolDropdown">
+                            <div class="loading-symbols">⏳ جاري تحميل العملات...</div>
+                        </div>
                     </div>
                     <button class="btn btn-activate" onclick="loadCryptoData()" style="width: 100%;">
                         ⚡ تحميل البيانات (ENTER)
@@ -1141,6 +1265,165 @@
         let exchangeConnection = null;
         let isRealTrading = false; // false = تجريبي، true = حقيقي
 
+        // === إدارة نوع السوق (جديد) ===
+        let marketType = 'spot'; // 'spot' أو 'futures'
+        let availableSymbols = {
+            spot: [],
+            futures: []
+        };
+
+        // اختيار نوع السوق
+        function selectMarketType(type) {
+            marketType = type;
+            
+            // تحديث الواجهة
+            document.getElementById('spotMarket').classList.remove('selected');
+            document.getElementById('futuresMarket').classList.remove('selected');
+            document.getElementById(type + 'Market').classList.add('selected');
+            
+            // تحديث placeholder
+            const input = document.getElementById('symbolInput');
+            if (type === 'spot') {
+                input.placeholder = 'مثال: BTC, ETH, POWER (اضغط ENTER)';
+            } else {
+                input.placeholder = 'مثال: BTC, ETH, SOL (فيوتشر - اضغط ENTER)';
+            }
+            
+            console.log(`📊 تم تغيير نوع السوق إلى: ${type === 'spot' ? 'سبوت' : 'فيوتشر'}`);
+            
+            // إعادة تحميل قائمة العملات المتاحة
+            loadAvailableSymbols();
+        }
+
+        // تحميل العملات المتاحة من Binance
+        async function loadAvailableSymbols() {
+            const dropdown = document.getElementById('symbolDropdown');
+            dropdown.innerHTML = '<div class="loading-symbols">⏳ جاري تحميل العملات...</div>';
+            
+            try {
+                let url;
+                if (marketType === 'spot') {
+                    url = 'https://api.binance.com/api/v3/exchangeInfo';
+                } else {
+                    url = 'https://fapi.binance.com/fapi/v1/exchangeInfo';
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // تصفية العملات المتاحة للتداول
+                const symbols = data.symbols
+                    .filter(s => s.status === 'TRADING' || s.status === 'NEW') // للفيوتشر يستخدم NEW أيضاً
+                    .map(s => ({
+                        symbol: s.symbol,
+                        baseAsset: s.baseAsset,
+                        quoteAsset: s.quoteAsset,
+                        type: marketType
+                    }))
+                    .filter(s => s.quoteAsset === 'USDT' || s.quoteAsset === 'BUSD' || s.quoteAsset === 'USDC');
+                
+                // حفظ في الذاكرة
+                availableSymbols[marketType] = symbols;
+                
+                console.log(`✅ تم تحميل ${symbols.length} عملة ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}`);
+                
+                // تحديث القائمة المنسدلة
+                updateSymbolDropdown(symbols);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحميل العملات:', error);
+                dropdown.innerHTML = '<div class="loading-symbols">❌ فشل تحميل العملات</div>';
+            }
+        }
+
+        // تحديث قائمة العملات المنسدلة
+        function updateSymbolDropdown(symbols) {
+            const dropdown = document.getElementById('symbolDropdown');
+            
+            if (symbols.length === 0) {
+                dropdown.innerHTML = '<div class="loading-symbols">لا توجد عملات متاحة</div>';
+                return;
+            }
+            
+            // عرض أول 50 عملة فقط في القائمة المبدئية
+            const displaySymbols = symbols.slice(0, 50);
+            
+            let html = '';
+            displaySymbols.forEach(s => {
+                html += `
+                    <div class="symbol-option" onclick="selectSymbol('${s.symbol}')">
+                        <span class="symbol-name">${s.baseAsset}/${s.quoteAsset}</span>
+                        <span class="symbol-type">${s.symbol}</span>
+                    </div>
+                `;
+            });
+            
+            if (symbols.length > 50) {
+                html += `<div class="loading-symbols">... و ${symbols.length - 50} عملة أخرى</div>`;
+            }
+            
+            dropdown.innerHTML = html;
+        }
+
+        // اختيار عملة من القائمة
+        function selectSymbol(symbol) {
+            document.getElementById('symbolInput').value = symbol.replace('USDT', '').replace('BUSD', '').replace('USDC', '');
+            document.getElementById('symbolDropdown').classList.remove('active');
+            loadCryptoData();
+        }
+
+        // البحث في العملات
+        function searchSymbols(query) {
+            const dropdown = document.getElementById('symbolDropdown');
+            const symbols = availableSymbols[marketType];
+            
+            if (!symbols || symbols.length === 0) return;
+            
+            if (!query) {
+                updateSymbolDropdown(symbols);
+                return;
+            }
+            
+            const filtered = symbols.filter(s => 
+                s.baseAsset.toLowerCase().includes(query.toLowerCase()) ||
+                s.symbol.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="loading-symbols">لا توجد نتائج</div>';
+                return;
+            }
+            
+            let html = '';
+            filtered.slice(0, 20).forEach(s => {
+                html += `
+                    <div class="symbol-option" onclick="selectSymbol('${s.symbol}')">
+                        <span class="symbol-name">${s.baseAsset}/${s.quoteAsset}</span>
+                        <span class="symbol-type">${s.symbol}</span>
+                    </div>
+                `;
+            });
+            
+            dropdown.innerHTML = html;
+        }
+
+        // إظهار/إخفاء القائمة المنسدلة
+        document.getElementById('symbolInput').addEventListener('focus', function() {
+            document.getElementById('symbolDropdown').classList.add('active');
+        });
+
+        document.getElementById('symbolInput').addEventListener('input', function(e) {
+            searchSymbols(e.target.value);
+        });
+
+        // إخفاء القائمة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const container = document.querySelector('.symbol-search-container');
+            if (!container.contains(e.target)) {
+                document.getElementById('symbolDropdown').classList.remove('active');
+            }
+        });
+
         // اختيار المنصة
         function selectExchange(exchangeId) {
             // إزالة التحديد السابق
@@ -1288,19 +1571,25 @@
             }
             
             const wsSymbol = symbol.toLowerCase();
-            const wsUrl = `wss://stream.binance.com:9443/ws/${wsSymbol}@ticker`;
+            let wsUrl;
+            
+            if (marketType === 'spot') {
+                wsUrl = `wss://stream.binance.com:9443/ws/${wsSymbol}@ticker`;
+            } else {
+                wsUrl = `wss://fstream.binance.com/ws/${wsSymbol}@ticker`;
+            }
             
             binanceWS = new WebSocket(wsUrl);
             
             binanceWS.onopen = () => {
-                console.log('✅ WebSocket connected for', symbol);
-                document.getElementById('botStatus').innerHTML = '🟢 متصل بالأسعار الفورية';
+                console.log(`✅ WebSocket connected for ${symbol} (${marketType})`);
+                document.getElementById('botStatus').innerHTML = `🟢 متصل بالأسعار الفورية (${marketType === 'spot' ? 'سبوت' : 'فيوتشر'})`;
             };
             
             binanceWS.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
-                    if (data.e === '24hrTicker') {
+                    if (data.e === '24hrTicker' || data.e === '24hrMiniTicker') {
                         const price = parseFloat(data.c);
                         document.getElementById('currentPrice').textContent = '$' + price.toFixed(4);
                         document.getElementById('currentPriceDisplay').style.display = 'block';
@@ -1466,7 +1755,15 @@
         async function loadCandleDataForNewDay() {
             try {
                 console.log('📊 جاري تحميل بيانات شمعة اليوم الجديد...');
-                const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=24`);
+                
+                let url;
+                if (marketType === 'spot') {
+                    url = `https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=24`;
+                } else {
+                    url = `https://fapi.binance.com/fapi/v1/klines?symbol=${currentSymbol}&interval=1h&limit=24`;
+                }
+                
+                const response = await fetch(url);
                 
                 if (response.ok) {
                     const data = await response.json();
@@ -1476,6 +1773,7 @@
 📅 <b>تم تحديث بيانات اليوم الجديد</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
+📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 📈 نقطة دخول اللونج: $${candleData.high.toFixed(4)}
 📉 نقطة دخول الشورت: $${candleData.low.toFixed(4)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -1547,7 +1845,8 @@
                 duration: duration,
                 targetHit: targetHit,
                 stopHit: stopHit,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                marketType: marketType // حفظ نوع السوق
             };
             
             todayTrades.push(trade);
@@ -1618,6 +1917,7 @@
 🚨 <b>دخول صفقة لونج</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
+📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 📈 السعر الحالي: $${currentPrice.toFixed(4)}
 ⚡ الرافعة: ${leverage}x
@@ -1666,6 +1966,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
 🚨 <b>دخول صفقة شورت</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
+📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 📉 السعر الحالي: $${currentPrice.toFixed(4)}
 ⚡ الرافعة: ${leverage}x
@@ -1733,7 +2034,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي على ' + exchanges[exchangeCo
                             
                             const message = `
 ✅ <b>تحقيق الهدف ${targetPercent}%</b>
-📊 العملة: ${currentSymbol} | 📈 لونج
+📊 العملة: ${currentSymbol} | 📈 لونج | ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
@@ -1836,7 +2137,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             
                             const message = `
 ✅ <b>تحقيق الهدف ${targetPercent}%</b>
-📊 العملة: ${currentSymbol} | 📉 شورت
+📊 العملة: ${currentSymbol} | 📉 شورت | ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
@@ -1930,7 +2231,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             
                             const message = `
 ❌ <b>ضرب الستوب لوس</b>
-📊 العملة: ${currentSymbol} | 📈 لونج
+📊 العملة: ${currentSymbol} | 📈 لونج | ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.high.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
@@ -2009,7 +2310,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                             
                             const message = `
 ❌ <b>ضرب الستوب لوس</b>
-📊 العملة: ${currentSymbol} | 📉 شورت
+📊 العملة: ${currentSymbol} | 📉 شورت | ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💰 سعر الدخول: $${candleData.low.toFixed(4)}
 💰 سعر الخروج: $${currentPrice.toFixed(4)}
@@ -2068,6 +2369,8 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
             let totalProfit = 0;
             let winningTrades = 0;
             let losingTrades = 0;
+            let spotTrades = 0;
+            let futuresTrades = 0;
             
             // حساب إحصائيات اليوم
             todayTrades.forEach(trade => {
@@ -2076,6 +2379,12 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     winningTrades++;
                 } else if (trade.profitLoss < 0) {
                     losingTrades++;
+                }
+                
+                if (trade.marketType === 'spot') {
+                    spotTrades++;
+                } else {
+                    futuresTrades++;
                 }
             });
             
@@ -2088,6 +2397,8 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                 tradeSummary = `
 📊 <b>إحصائيات صفقات اليوم:</b>
 • إجمالي الصفقات: ${totalTrades}
+• صفقات سبوت: ${spotTrades}
+• صفقات فيوتشر: ${futuresTrades}
 • الصفقات الرابحة: ${winningTrades}
 • الصفقات الخاسرة: ${losingTrades}
 • نسبة الربح: ${winRate}%
@@ -2201,55 +2512,73 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             document.getElementById('candleData').style.display = 'none';
 
             try {
-                const exchangeInfo = await fetch('https://api.binance.com/api/v3/exchangeInfo');
-                const infoData = await exchangeInfo.json();
-                
-                const allSymbols = infoData.symbols.map(s => s.symbol);
+                // استخدام قائمة العملات المحملة مسبقاً
+                const symbols = availableSymbols[marketType];
                 let foundSymbol = null;
                 
-                const possibleSymbols = [
-                    symbolInput + 'USDT',
-                    'USDT' + symbolInput,
-                    symbolInput + 'BUSD',
-                    'BUSD' + symbolInput,
-                    symbolInput + 'BTC',
-                    symbolInput + 'ETH',
-                    symbolInput
-                ];
-                
-                if (symbolInput === 'POWER' || symbolInput === 'POWERUSDT') {
-                    if (allSymbols.includes('POWERUSDT')) {
-                        foundSymbol = 'POWERUSDT';
+                // البحث في القائمة المحملة
+                if (symbols && symbols.length > 0) {
+                    // البحث المباشر
+                    foundSymbol = symbols.find(s => 
+                        s.symbol === symbolInput || 
+                        s.symbol === symbolInput + 'USDT' ||
+                        s.symbol === symbolInput + 'BUSD' ||
+                        s.symbol === symbolInput + 'USDC'
+                    );
+                    
+                    // إذا لم يتم العثور عليه، ابحث باستخدام baseAsset
+                    if (!foundSymbol) {
+                        foundSymbol = symbols.find(s => 
+                            s.baseAsset === symbolInput && 
+                            (s.quoteAsset === 'USDT' || s.quoteAsset === 'BUSD' || s.quoteAsset === 'USDC')
+                        );
                     }
                 }
                 
+                // إذا لم يتم العثور عليه في القائمة، حاول البحث في API
                 if (!foundSymbol) {
+                    let exchangeInfoUrl;
+                    if (marketType === 'spot') {
+                        exchangeInfoUrl = 'https://api.binance.com/api/v3/exchangeInfo';
+                    } else {
+                        exchangeInfoUrl = 'https://fapi.binance.com/fapi/v1/exchangeInfo';
+                    }
+                    
+                    const exchangeInfo = await fetch(exchangeInfoUrl);
+                    const infoData = await exchangeInfo.json();
+                    
+                    const allSymbols = infoData.symbols.map(s => s.symbol);
+                    
+                    const possibleSymbols = [
+                        symbolInput + 'USDT',
+                        symbolInput + 'BUSD',
+                        symbolInput + 'USDC',
+                        symbolInput
+                    ];
+                    
                     for (const symbol of possibleSymbols) {
                         if (allSymbols.includes(symbol)) {
-                            foundSymbol = symbol;
+                            foundSymbol = { symbol: symbol, baseAsset: symbolInput, quoteAsset: 'USDT' };
                             break;
                         }
                     }
                 }
                 
                 if (!foundSymbol) {
-                    for (const symbol of allSymbols) {
-                        const baseAsset = infoData.symbols.find(s => s.symbol === symbol)?.baseAsset;
-                        if (baseAsset === symbolInput) {
-                            if (symbol.includes('USDT') || symbol.includes('BUSD')) {
-                                foundSymbol = symbol;
-                                break;
-                            }
-                        }
-                    }
+                    throw new Error(`العملة ${symbolInput} غير موجودة في ${marketType === 'spot' ? 'السبوت' : 'الفيوتشر'}\n\n🔍 جرب عملة أخرى مثل:\nBTC, ETH, BNB, XRP, ADA, SOL, DOGE...`);
                 }
                 
-                if (!foundSymbol) {
-                    throw new Error(`العملة ${symbolInput} غير موجودة في Binance\n\n🔍 جرب عملة أخرى مثل:\nBTC, ETH, BNB, XRP, ADA, SOL, DOGE, OP, POWER...`);
+                currentSymbol = foundSymbol.symbol;
+                
+                // تحميل بيانات الشمعة
+                let klinesUrl;
+                if (marketType === 'spot') {
+                    klinesUrl = `https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=24`;
+                } else {
+                    klinesUrl = `https://fapi.binance.com/fapi/v1/klines?symbol=${currentSymbol}&interval=1h&limit=24`;
                 }
                 
-                currentSymbol = foundSymbol;
-                const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=24`);
+                const response = await fetch(klinesUrl);
                 
                 if (!response.ok) {
                     throw new Error(`العملة ${symbolInput} موجودة ولكن لا توجد بيانات كافية`);
@@ -2284,7 +2613,15 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
             }
 
             if (!midnightCandle) {
-                const moreResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=48`);
+                // محاولة تحميل المزيد من البيانات
+                let moreUrl;
+                if (marketType === 'spot') {
+                    moreUrl = `https://api.binance.com/api/v3/klines?symbol=${currentSymbol}&interval=1h&limit=48`;
+                } else {
+                    moreUrl = `https://fapi.binance.com/fapi/v1/klines?symbol=${currentSymbol}&interval=1h&limit=48`;
+                }
+                
+                const moreResponse = await fetch(moreUrl);
                 const moreData = await moreResponse.json();
                 
                 for (const candle of moreData) {
@@ -2345,6 +2682,7 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 🎯 <b>تفعيل الاستراتيجية الذهبية</b>
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
+📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 💰 السعر الحالي: $${parseFloat(document.getElementById('currentPrice').textContent.replace('$', '')).toFixed(4)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📈 نقطة دخول اللونج: $${candleData.high.toFixed(4)}
@@ -2392,6 +2730,7 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
 🎯 تم تفعيل الاستراتيجية الذهبية!
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
+📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 📊 الوضع: ${modeText}
 💰 الرافعة: ${leverage}x
 📊 نسبة الحجز: ${marginPercent}%
@@ -2455,7 +2794,14 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
 
         window.onload = function() {
             updateDateAndStats();
-            loadCryptoData();
+            
+            // تحميل قائمة العملات عند البدء
+            loadAvailableSymbols();
+            
+            // تحميل بيانات BTC افتراضياً
+            setTimeout(() => {
+                loadCryptoData();
+            }, 1000);
             
             const now = new Date();
             const endOfDay = new Date();
@@ -2490,6 +2836,7 @@ ${isRealTrading ? '🔴 <b>التداول على منصة ' + exchanges[exchange
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🕒 الوقت: ${currentTime}
 📊 العملة: ${symbol}
+📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 💰 السعر الحالي: ${currentPrice}
 🔔 الحالة: ${isStrategyActive ? '🟢 الاستراتيجية مفعلة' : '🟡 في انتظار التفعيل'}
 📊 صفقات اليوم: ${tradeCount}
