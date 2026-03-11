@@ -1865,7 +1865,7 @@
             console.log(`📝 تم إضافة صفقة ${tradeCount}:`, trade);
         }
 
-        // دالة مراقبة الأسعار وإرسال التنبيهات - مع الستوب 0.0001%
+        // دالة مراقبة الأسعار وإرسال التنبيهات - مع الستوب 0.0001% (معدلة)
         async function monitorPrice() {
             if (!isStrategyActive || !candleData) return;
             
@@ -2194,7 +2194,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     }
                 }
                 
-                // === مراقبة ضرب الستوب للونج (0.0001%) ===
+                // === مراقبة ضرب الستوب للونج (0.0001%) - معدل ===
                 if (tradeStatus === 'long_entry' && !stopHit) {
                     const stopPrice = candleData.high * 0.999999; // -0.0001% بالضبط
                     
@@ -2225,9 +2225,10 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                         if (!notificationSent.stopLoss) {
                             notificationSent.stopLoss = true;
                             
-                            const lossWithoutLeverage = ((currentPrice - candleData.high) / candleData.high * 100).toFixed(4);
-                            const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(4);
-                            const lossAmount = (remainingAmount * (lossWithLeverage / 100)).toFixed(2);
+                            // ✅ حساب الخسارة بشكل صحيح مع الرافعة
+                            const stopLossPercent = 0.0001; // 0.0001%
+                            const lossWithLeverage = (stopLossPercent * leverage).toFixed(4); // 0.0001% * الرافعة
+                            const lossAmount = (remainingAmount * (lossWithLeverage / 100)).toFixed(2); // الخسارة بالدولار
                             
                             const message = `
 ❌ <b>ضرب الستوب لوس</b>
@@ -2239,7 +2240,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
-• بدون رافعة: ${lossWithoutLeverage}%
+• نسبة الستوب: 0.0001%
 • مع الرافعة ${leverage}x: -${lossWithLeverage}%
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💵 المبلغ المتبقي: $${remainingAmount.toFixed(2)}
@@ -2273,7 +2274,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                     }
                 }
                 
-                // === مراقبة ضرب الستوب للشورت (0.0001%) ===
+                // === مراقبة ضرب الستوب للشورت (0.0001%) - معدل ===
                 if (tradeStatus === 'short_entry' && !stopHit) {
                     const stopPrice = candleData.low * 1.000001; // +0.0001% بالضبط
                     
@@ -2304,9 +2305,10 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
                         if (!notificationSent.stopLoss) {
                             notificationSent.stopLoss = true;
                             
-                            const lossWithoutLeverage = ((candleData.low - currentPrice) / candleData.low * 100).toFixed(4);
-                            const lossWithLeverage = (Math.abs(lossWithoutLeverage) * leverage).toFixed(4);
-                            const lossAmount = (remainingAmount * (lossWithLeverage / 100)).toFixed(2);
+                            // ✅ حساب الخسارة بشكل صحيح مع الرافعة
+                            const stopLossPercent = 0.0001; // 0.0001%
+                            const lossWithLeverage = (stopLossPercent * leverage).toFixed(4); // 0.0001% * الرافعة
+                            const lossAmount = (remainingAmount * (lossWithLeverage / 100)).toFixed(2); // الخسارة بالدولار
                             
                             const message = `
 ❌ <b>ضرب الستوب لوس</b>
@@ -2318,7 +2320,7 @@ ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجر�
 ${isRealTrading ? '🔴 <b>تداول حقيقي</b>' : '🟢 تداول تجريبي'}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 <b>الخسارة:</b>
-• بدون رافعة: ${lossWithoutLeverage}%
+• نسبة الستوب: 0.0001%
 • مع الرافعة ${leverage}x: -${lossWithLeverage}%
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 💵 المبلغ المتبقي: $${remainingAmount.toFixed(2)}
