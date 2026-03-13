@@ -1024,7 +1024,7 @@
                     
                     <div class="info-box" style="margin-bottom: 20px;">
                         <strong>⏰ شمعة 00:00 UTC:</strong><br>
-                        نستخدمها لتحديد Low و High فقط (لا للتداول)
+                        نستخدم جسم الشمعة فقط (Open/Close) بدون الذيول
                     </div>
 
                     <!-- اختيار نوع السوق -->
@@ -1072,22 +1072,22 @@
 
                 <!-- قسم بيانات شمعة 00:00 UTC -->
                 <div class="card">
-                    <h2>📊 بيانات شمعة 00:00 UTC</h2>
+                    <h2>📊 بيانات شمعة 00:00 UTC (جسم الشمعة)</h2>
                     <div id="candleData" style="display: none;">
                         <div class="entry-prices">
                             <div class="entry-header">
-                                ⭐ السعرين الوحيدين للدخول ⭐
+                                ⭐ الدخول بناءً على جسم الشمعة فقط ⭐
                             </div>
                             <div class="entry-grid">
                                 <div class="entry-box">
                                     <div class="entry-type">📈 دخول لونج (Long)</div>
                                     <div class="entry-price" id="longEntry">-</div>
-                                    <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">High Price</div>
+                                    <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">أعلى نقطة في الجسم</div>
                                 </div>
                                 <div class="entry-box">
                                     <div class="entry-type">📉 دخول شورت (Short)</div>
                                     <div class="entry-price" id="shortEntry">-</div>
-                                    <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">Low Price</div>
+                                    <div class="entry-type" style="font-size: 0.9em; margin-top: 5px;">أقل نقطة في الجسم</div>
                                 </div>
                             </div>
                         </div>
@@ -1096,7 +1096,7 @@
                             <strong>⚠️ تنبيه هام:</strong><br>
                             الدخول يتم فقط عند كسر أحد هذين السعرين!<br>
                             <span style="color: #ffd700; font-size: 0.9em;">
-                                (شمعة 00:00 تستخدم لتحديد الأسعار فقط)
+                                (بناءً على جسم الشمعة - بدون الذيول)
                             </span>
                         </div>
                     </div>
@@ -1774,8 +1774,8 @@
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 📊 العملة: ${currentSymbol}
 📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
-📈 نقطة دخول اللونج: $${candleData.high.toFixed(4)}
-📉 نقطة دخول الشورت: $${candleData.low.toFixed(4)}
+📈 نقطة دخول اللونج (أعلى جسم): $${candleData.high.toFixed(4)}
+📉 نقطة دخول الشورت (أقل جسم): $${candleData.low.toFixed(4)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 🕒 تم التحديث تلقائياً لليوم الجديد
 ✅ جاهز لصفقات اليوم
@@ -2642,11 +2642,22 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
                 throw new Error('لم يتم العثور على شمعة 00:00 UTC');
             }
 
+            // ===== التعديل هنا: استخدام جسم الشمعة فقط =====
+            // midnightCandle[1] = سعر الافتتاح (Open)
+            // midnightCandle[4] = سعر الإغلاق (Close)
+            const openPrice = parseFloat(midnightCandle[1]);  // سعر الافتتاح
+            const closePrice = parseFloat(midnightCandle[4]); // سعر الإغلاق
+            
+            // نحدد أعلى نقطة في الجسم (للدخول لونج) وأقل نقطة في الجسم (للدخول شورت)
+            const candleBodyHigh = Math.max(openPrice, closePrice);  // أعلى جسم الشمعة
+            const candleBodyLow = Math.min(openPrice, closePrice);   // أقل جسم الشمعة
+
             candleData = {
-                high: parseFloat(midnightCandle[2]),
-                low: parseFloat(midnightCandle[3]),
+                high: candleBodyHigh,  // أعلى نقطة في الجسم (بدون ذيول)
+                low: candleBodyLow,     // أقل نقطة في الجسم (بدون ذيول)
                 symbol: currentSymbol
             };
+            // ===== نهاية التعديل =====
 
             document.getElementById('longEntry').textContent = '$' + candleData.high.toFixed(4);
             document.getElementById('shortEntry').textContent = '$' + candleData.low.toFixed(4);
@@ -2687,8 +2698,8 @@ ${totalProfit > 0 ? '🎉 يوم رابح! استمر في التقدم!' :
 📊 نوع السوق: ${marketType === 'spot' ? 'سبوت' : 'فيوتشر'}
 💰 السعر الحالي: $${parseFloat(document.getElementById('currentPrice').textContent.replace('$', '')).toFixed(4)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-📈 نقطة دخول اللونج: $${candleData.high.toFixed(4)}
-📉 نقطة دخول الشورت: $${candleData.low.toFixed(4)}
+📈 نقطة دخول اللونج (أعلى جسم): $${candleData.high.toFixed(4)}
+📉 نقطة دخول الشورت (أقل جسم): $${candleData.low.toFixed(4)}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ⚡ <b>الإعدادات:</b>
 📊 الوضع: ${modeText}
